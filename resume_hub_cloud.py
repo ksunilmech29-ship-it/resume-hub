@@ -13,7 +13,7 @@ from email import encoders
 from flask import Flask, request, jsonify, g
 
 BASE       = os.path.dirname(os.path.abspath(__file__))
-DB_PATH    = os.path.join(BASE, 'resume_queue.db')
+DB_PATH    = '/tmp/resume_queue.db'
 TEMPLATE   = os.path.join(BASE, 'master_template.docx')
 TMP_DIR    = tempfile.gettempdir()
 DEFAULT_TO = 'ksunilmech29@gmail.com'
@@ -21,6 +21,7 @@ DEFAULT_TO = 'ksunilmech29@gmail.com'
 app = Flask(__name__)
 
 # ── Database ──────────────────────────────────────────────────────────────────
+# Init runs at import time so Gunicorn workers have the schema ready
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS jobs (
@@ -58,6 +59,8 @@ def init_db():
     conn.executescript(SCHEMA)
     conn.commit()
     conn.close()
+
+init_db()  # runs at import time — works with both gunicorn and direct python
 
 def get_setting(key, default=''):
     row = get_db().execute('SELECT value FROM settings WHERE key=?', (key,)).fetchone()
