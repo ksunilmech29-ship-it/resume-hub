@@ -196,8 +196,25 @@ Return ONLY the Python script inside a ```python ... ``` code block. No explanat
 """
 
 def _extract_script(text):
+    # Try standard ```python ... ``` block
     m = re.search(r'```python\s*(.*?)```', text, re.DOTALL)
-    return m.group(1).strip() if m else None
+    if m:
+        return m.group(1).strip()
+    # Try ``` ... ``` without language tag
+    m = re.search(r'```\s*(import .*?)```', text, re.DOTALL)
+    if m:
+        return m.group(1).strip()
+    # If response itself starts with import/# it's already raw Python
+    stripped = text.strip()
+    if stripped.startswith('import ') or stripped.startswith('#') or stripped.startswith('from '):
+        return stripped
+    # Last resort: find first 'import' and take everything from there
+    idx = text.find('import os')
+    if idx == -1:
+        idx = text.find('import zipfile')
+    if idx != -1:
+        return text[idx:].strip()
+    return None
 
 def _do_build(job_id, db_path, extra=''):
     conn = sqlite3.connect(db_path)
