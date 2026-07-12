@@ -250,10 +250,11 @@ def _do_build(job_id, db_path, extra=''):
         # Upload to Google Drive
         log('Uploading to Google Drive...')
         drive_link = ''
+        drive_error = ''
         try:
             drive_link = upload_to_drive(output_path, fname)
         except Exception as e:
-            log(f'Drive upload failed: {e}\nResume built locally — trying email...')
+            drive_error = str(e)
 
         # Also email if configured
         gmail_user = _get_setting_direct(db_path, 'gmail_user', os.environ.get('GMAIL_USER', ''))
@@ -271,9 +272,12 @@ def _do_build(job_id, db_path, extra=''):
             pass
 
         status  = 'done'
-        log_msg = f'Resume saved to Google Drive.'
         if drive_link:
-            log_msg += f'\nLink: {drive_link}'
+            log_msg = f'Resume saved to Google Drive.\nLink: {drive_link}'
+        elif drive_error:
+            log_msg = f'Resume built but Drive upload failed:\n{drive_error}'
+        else:
+            log_msg = 'Resume built. Drive link not available.'
 
         conn.execute(
             "UPDATE jobs SET status=?, built_at=?, build_log=?, drive_link=? WHERE id=?",
