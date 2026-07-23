@@ -238,7 +238,7 @@ def _do_build(job_id, db_path, extra=''):
         client   = anthropic.Anthropic(api_key=api_key)
         response = client.messages.create(
             model='claude-sonnet-4-6',
-            max_tokens=8192,
+            max_tokens=16000,
             messages=[{'role': 'user', 'content': build_prompt(job, output_path, extra)}]
         )
 
