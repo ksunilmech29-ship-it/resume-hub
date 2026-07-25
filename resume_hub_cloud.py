@@ -123,17 +123,14 @@ RESUME RULES (all mandatory):
 # ── Google Drive ──────────────────────────────────────────────────────────────
 
 def _get_drive_service():
-    creds_b64 = os.environ.get('GOOGLE_CREDENTIALS_JSON', '')
-    if not creds_b64:
-        raise ValueError('GOOGLE_CREDENTIALS_JSON env var not set.')
-    creds_json = base64.b64decode(creds_b64).decode('utf-8')
-    creds_dict = json.loads(creds_json)
-
-    from google.oauth2 import service_account
+    from google.oauth2.credentials import Credentials
     from googleapiclient.discovery import build
-    creds = service_account.Credentials.from_service_account_info(
-        creds_dict,
-        scopes=['https://www.googleapis.com/auth/drive.file']
+    creds = Credentials(
+        token=None,
+        refresh_token=os.environ['GOOGLE_REFRESH_TOKEN'],
+        client_id=os.environ['GOOGLE_CLIENT_ID'],
+        client_secret=os.environ['GOOGLE_CLIENT_SECRET'],
+        token_uri='https://oauth2.googleapis.com/token',
     )
     return build('drive', 'v3', credentials=creds)
 
@@ -152,7 +149,6 @@ def upload_to_drive(file_path, filename):
         mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     )
     f = service.files().create(body=meta, media_body=media, fields='id,webViewLink').execute()
-    # Make it viewable by anyone with the link
     service.permissions().create(
         fileId=f['id'],
         body={'role': 'reader', 'type': 'anyone'}
@@ -238,7 +234,7 @@ def _do_build(job_id, db_path, extra=''):
         client   = anthropic.Anthropic(api_key=api_key)
         response = client.messages.create(
             model='claude-sonnet-4-6',
-            max_tokens=16000,
+            max_tokens=8192,
             messages=[{'role': 'user', 'content': build_prompt(job, output_path, extra)}]
         )
 
@@ -277,11 +273,13 @@ def _do_build(job_id, db_path, extra=''):
         gmail_user = _get_setting_direct(db_path, 'gmail_user', os.environ.get('GMAIL_USER', ''))
         gmail_pass = _get_setting_direct(db_path, 'gmail_pass', os.environ.get('GMAIL_PASS', ''))
         to_addr    = _get_setting_direct(db_path, 'email_to', DEFAULT_TO)
+        email_status = ''
         if gmail_user and gmail_pass:
             try:
                 _send_email(job, output_path, to_addr, gmail_user, gmail_pass, drive_link)
+                email_status = f'Email sent to {to_addr}.'
             except Exception as e:
-                pass
+                email_status = f'Email failed: {e}'
 
         try:
             os.unlink(output_path)
@@ -289,12 +287,16 @@ def _do_build(job_id, db_path, extra=''):
             pass
 
         status  = 'done'
+        parts = []
         if drive_link:
-            log_msg = f'Resume saved to Google Drive.\nLink: {drive_link}'
+            parts.append(f'Saved to Google Drive: {drive_link}')
         elif drive_error:
-            log_msg = f'Resume built but Drive upload failed:\n{drive_error}'
+            parts.append(f'Drive upload failed: {drive_error}')
         else:
-            log_msg = 'Resume built. Drive link not available.'
+            parts.append('Drive upload skipped (no credentials).')
+        if email_status:
+            parts.append(email_status)
+        log_msg = '\n'.join(parts)
 
         conn.execute(
             "UPDATE jobs SET status=?, built_at=?, build_log=?, drive_link=? WHERE id=?",
@@ -673,7 +675,7 @@ function renderJobs() {
     const bClass = {pending:'b-pending',building:'b-building',done:'b-done',error:'b-error'}[j.status] || 'b-pending';
     const bLabel = {pending:'Pending',building:'Building...',done:'Done',error:'Error'}[j.status] || j.status;
     const canBuild = j.status === 'pending' || j.status === 'error';
-    const showLog  = (j.status === 'building' || j.status === 'error') && j.build_log;
+    const showLog  = j.build_log && (j.status === 'building' || j.status === 'error' || (j.status === 'done' && !j.drive_link));
     const logHtml  = showLog ? `<div class="log-box">${esc(j.build_log.slice(-600))}</div>` : '';
     const driveHtml = j.drive_link ? `<a class="drive-link" href="${esc(j.drive_link)}" target="_blank">&#128194; Open in Google Drive</a>` : '';
     const replyHtml = j.status === 'error' ? `
