@@ -83,13 +83,20 @@ CANDIDATE: Sunil Kumar
 Contact: +91-9741114967 | ksunilmech29@gmail.com | linkedin.com/in/sunil-kumar-k-8b1b72a/
 Experience: 19+ years, Fintech and Financial Services domain
 
-CAREER ENTRIES (use exact titles):
-- Accenture (Nov 2006 - Oct 2009), Software Engineer
-  Description VERBATIM: "Started as a QA Engineer and progressively contributed to product and delivery - built user stories, supported product definition and process standardization across Banking, Insurance and Healthcare domain."
-- Attra (May 2018 - Mar 2022), Program Manager [NEVER "Program Director"]
-  Adapt description to role but always keep title as "Program Manager"
+CRITICAL: The job title and company in this request are the TARGET ROLE Sunil is APPLYING FOR.
+DO NOT add the target company to the Experience section. Experience shows only PAST employers below.
 
-CANONICAL EDUCATION AND CERTIFICATIONS (exactly these 4, in this exact order):
+PAST CAREER HISTORY (these 4 entries only, in this order, most recent first):
+1. Dialexa (Apr 2022 - Present), [use target role title adapted to this employer context]
+   Adapt 2-sentence description to the target role. Dialexa is a technology consulting firm.
+2. Attra (May 2018 - Mar 2022), Program Manager [NEVER "Program Director", NEVER "Synechron", NEVER "Syntel"]
+   Adapt 2-sentence description to target role. US-based clients, SaaS implementation, fintech delivery.
+3. Deutsche Bank (Nov 2009 - Apr 2018), Assistant Vice President
+   Adapt 2-sentence description to target role. Multi-region delivery, IB Division, India/EU/US geographies.
+4. Accenture (Nov 2006 - Oct 2009), Software Engineer
+   Use VERBATIM: "Started as a QA Engineer and progressively contributed to product and delivery, built user stories, supported product definition and process standardization across Banking, Insurance and Healthcare domain."
+
+CANONICAL EDUCATION AND CERTIFICATIONS (exactly these 4, in this exact order, verbatim):
 1. Executive Global Management Programme  -  IIM Calcutta  |  2014 - 2016
 2. Bachelor of Engineering  -  Visvesvaraya Technological University  |  2002 - 2006
 3. SAFe 5 Agilist  -  Scaled Agile Inc.  |  Dec 2022
@@ -100,19 +107,19 @@ DOMAIN: Always Fintech and Financial Services - anchor all experience to banking
 lending, capital markets, or enterprise fintech contexts.
 
 RESUME RULES (all mandatory):
-- 2 pages only, never exceed
+- 2 pages only, never exceed, never leave blank space on page 2
 - No em dashes anywhere, use colon or comma instead
 - No semicolons anywhere
-- No tables in experience or body sections - only the 3-column Core Competencies table
-- Career Highlights: exactly 2 lines, exactly 3 words per line (e.g. "19+ Years Experience")
-- Core Competencies: 3-column borderless table, 1 bold teal heading per column, up to 5 bullets (3-5 words, dash prefix)
-- Each job experience description: exactly 2 sentences max, never 3
+- No tables in experience or body sections - only the 3-column Core Competencies table is permitted
+- Career Highlights: EXACTLY 2 rows of 3 bullets each = 6 bullets total. Each bullet is a stat + max 2 words (e.g. "19+ Years Experience", "$20M Portfolio Governed", "95%+ On-time Delivery"). Rows separated by pipe dividers. Format: "19+ Years Experience  |  $20M Portfolio Governed  |  95%+ On-time Delivery"
+- Core Competencies: MANDATORY 3-column borderless table, 1 bold teal heading per column, up to 5 dash-prefixed bullets (3-5 words each). Headings must reflect the target role.
+- Each job experience description: exactly 2 sentences max
 - Education and Certifications: always on Page 1, exactly 4 entries
-- Page 1 order: Name/contact, Summary (2 short paras 2 sentences each), Career Highlights, Core Competencies, Experience (4 roles), Education
-- Page 2: Key Accomplishments only, 5-7 sections, bullets 200-250 chars, 2 sentences max, varied opening verbs
-- Vary opening verbs (Led, Drove, Designed, Established, Owned, Championed, Developed, Governed, Delivered, Managed, Scaled, Spearheaded, Directed, Executed, Defined)
-- Avoid "Built" more than twice per resume
-- Use "Attra" never "Synechron"
+- Page 1 order: Name/contact, role title (target role), Summary (2 paras, 2 sentences each), Career Highlights, Core Competencies, Experience (4 roles), Education
+- Page 2: Key Accomplishments only, 6-8 sections with teal bold headings. Each section has 2 bullets of 200-250 chars each. Fill the ENTIRE page 2 - no blank space at bottom.
+- Varied opening verbs per bullet (Led, Drove, Designed, Established, Owned, Championed, Developed, Governed, Delivered, Managed, Scaled, Spearheaded, Directed, Executed, Defined). Never repeat same verb more than twice.
+- No leading symbols on bullet body text - plain text starting with verb
+- Use "Attra" NEVER "Synechron" NEVER "Syntel" NEVER any other variant
 - Colors: Navy 1A3557, Teal 0D6E8A, Dark text 1A1A1A, Mid-gray 444444, Light-gray 888888
 - Page margins: top/bottom 576 DXA (0.4 inch), left/right 792 DXA (0.55 inch), content width 10656 DXA
 - Portfolio/revenue ($20M) only if JD explicitly mentions P&L or revenue ownership
