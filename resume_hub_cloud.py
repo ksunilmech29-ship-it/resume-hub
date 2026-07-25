@@ -87,8 +87,8 @@ CRITICAL: The job title and company in this request are the TARGET ROLE Sunil is
 DO NOT add the target company to the Experience section. Experience shows only PAST employers below.
 
 PAST CAREER HISTORY (these 4 entries only, in this order, most recent first):
-1. Dialexa (Apr 2022 - Present), [use target role title adapted to this employer context]
-   Adapt 2-sentence description to the target role. Dialexa is a technology consulting firm.
+1. Open Financial Technologies (Apr 2022 - Present), Vice President [adapt title to target role context — e.g. VP Customer Success, VP Delivery]
+   Adapt 2-sentence description to the target role. Open Financial Technologies is a fintech platform company.
 2. Attra (May 2018 - Mar 2022), Program Manager [NEVER "Program Director", NEVER "Synechron", NEVER "Syntel"]
    Adapt 2-sentence description to target role. US-based clients, SaaS implementation, fintech delivery.
 3. Deutsche Bank (Nov 2009 - Apr 2018), Assistant Vice President
