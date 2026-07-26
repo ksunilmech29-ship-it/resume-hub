@@ -80,191 +80,126 @@ def _get_setting_direct(db_path, key, default=''):
 
 PROFILE = """
 ==========================================================================
-CANDIDATE PROFILE — READ THIS BEFORE WRITING A SINGLE WORD
+STEP 1 — READ THE JD FIRST. BEFORE WRITING ANYTHING:
+Extract from the JD: the core role theme, key responsibilities, required
+skills, and priority keywords. Every section of this resume — header
+keywords, summary, competency headings, experience descriptions, and KA
+section headings — must reflect those JD themes. The resume reader must
+immediately see that Sunil matches what the JD asks for.
 ==========================================================================
 
-NAME: SUNIL KUMAR K  (THREE WORDS — the K is mandatory. Never drop it.)
+NAME: SUNIL KUMAR K  (three words, K is mandatory — never drop it)
 Contact: +91 9741114967 | ksunilmech29@gmail.com | linkedin.com/in/sunil-kumar-k-8b1b72a
 Experience: 19+ years, Fintech and Financial Services domain
 
 ==========================================================================
-WARNING — MASTER TEMPLATE CONTENT MUST BE COMPLETELY REPLACED
+MASTER TEMPLATE — STRUCTURE ONLY, NEVER COPY ITS TEXT
 ==========================================================================
-The master template is a DELIVERY LEADER resume. Its text content is
-irrelevant to most roles. You MUST replace EVERY paragraph of text with
-freshly written content tailored to the JD below.
-
-DO NOT copy these template phrases into any resume:
-  - "Squad Model", "Player-Coach", "Sprint KPI", "Delivery Predictability"
-  - "Portfolio Governance", "AI-Enabled Operations"
-  - Any headings or bullets from the template's Key Achievements section
-
-Use the template ONLY for: XML structure, fonts, colors, spacing, table
-structure, background colors, and page geometry. ALL prose is new.
+The template is a Delivery Leader resume. Use it ONLY for XML structure,
+fonts, colors, spacing, table layout, and background colors.
+Replace EVERY paragraph with JD-driven content. Do not carry over any
+phrase, heading, or bullet from the template text.
 
 ==========================================================================
-CRITICAL RULE: TARGET COMPANY vs PAST EMPLOYERS
+TARGET ROLE vs PAST EMPLOYERS
 ==========================================================================
-The Title and Company in this request = the role Sunil is APPLYING FOR.
-NEVER add the target company to the Experience section.
-Experience section shows only these 4 PAST employers.
+Title and Company in this request = the job Sunil is APPLYING FOR.
+Never add the target company to the Experience section.
 
 ==========================================================================
-PAST CAREER HISTORY (exactly these 4, most recent first)
+CAREER HISTORY — exactly these 4, most recent first
 ==========================================================================
 1. Open Financial Technologies | Vice President | Apr 2022 - Present
-   Fintech platform company. Adapt job title display and 2-sentence
-   description to the target JD role type.
+   Fintech platform company. Adapt title and 2-sentence description to JD.
 
 2. Attra | Program Manager | May 2018 - Mar 2022
-   NEVER write "Synechron", "Syntel", or "Program Director".
-   US-based clients, SaaS implementation, fintech/enterprise delivery.
-   Adapt 2-sentence description to target JD.
+   NEVER "Synechron", "Syntel", or "Program Director".
+   US-based clients, SaaS, fintech delivery. Adapt 2-sentence description to JD.
 
 3. Deutsche Bank | Assistant Vice President | Nov 2009 - Apr 2018
-   Multi-region: India, EU, US. IB Division scale.
-   Adapt 2-sentence description to target JD.
+   Multi-region: India, EU, US. IB Division. Adapt 2-sentence description to JD.
 
 4. Accenture | Software Engineer | Nov 2006 - Oct 2009
-   VERBATIM (do not change a single word):
-   "Started as a QA Engineer and progressively contributed to product
-   and delivery, built user stories, supported product definition and
-   process standardization across Banking, Insurance and Healthcare domain."
+   VERBATIM: "Started as a QA Engineer and progressively contributed to product
+   and delivery, built user stories, supported product definition and process
+   standardization across Banking, Insurance and Healthcare domain."
 
 ==========================================================================
-EDUCATION AND CERTIFICATIONS (exactly these 4, verbatim, always Page 1)
+EDUCATION AND CERTIFICATIONS — exactly these 4, verbatim, always Page 1
 ==========================================================================
 1. Executive Global Management Programme  -  IIM Calcutta  |  2014 - 2016
 2. Bachelor of Engineering  -  Visvesvaraya Technological University  |  2002 - 2006
 3. SAFe 5 Agilist  -  Scaled Agile Inc.  |  Dec 2022
 4. Certified Scrum Master (CSM)  -  Scrum Alliance
-NEVER add PMP, Prince2, TOGAF, CFA, or any other certification.
+Never add PMP, Prince2, TOGAF, CFA, or any other certification.
+
+Domain: always Fintech and Financial Services.
 
 ==========================================================================
-DOMAIN: Always Fintech and Financial Services
+PAGE 1 FORMAT
 ==========================================================================
-Anchor all experience to banking, payments, lending, capital markets,
-or enterprise fintech. Never position as a generalist.
+HEADER — 3 lines:
+  Line 1 [BG F0F7FB, ALL CAPS bold Navy]: SUNIL KUMAR K
+  Line 2 [BG F0F7FB, teal]:
+    [Target role title]  |  [3-5 keywords drawn directly from the JD]
+    Keywords must reflect what the JD asks for — not generic phrases.
+  Line 3 [no BG, gray]:
+    Bangalore, India  |  +91 9741114967  |  ksunilmech29@gmail.com  |  linkedin.com/in/sunil-kumar-k-8b1b72a
 
-==========================================================================
-EXACT FORMAT — PAGE 1
-==========================================================================
+PROFESSIONAL SUMMARY — 2 paragraphs, min 6 lines:
+  Every sentence must address what the JD asks for.
+  Para 1: positioning + domain + years + leadership angle matching JD.
+  Para 2: quantified outcomes relevant to the JD requirements.
+  No em dashes, no semicolons.
 
-── HEADER (3 lines) ──
-Line 1 [BG F0F7FB, bold Navy 1A3557, ALL CAPS, large]:
-  SUNIL KUMAR K
-  (The K is non-negotiable. Missing K = validation failure.)
+CAREER HIGHLIGHTS [BG E3F2F8, both rows]:
+  Exactly 2 rows × 3 items = 6 items. Separator: ◆ (not |).
+  Each item: stat + max 2 words. Choose stats that match the JD priorities.
 
-Line 2 [BG F0F7FB, teal 0D6E8A, sentence case]:
-  [Target role title from JD]  |  [3-5 specialism keywords from JD]
-  Keywords MUST match the JD role — not the template.
-  For a Strategy role: "Head of Strategy and Transformation  |  Strategic Planning  |  Business Transformation  |  Stakeholder Management"
-  For a Customer Success role: "Head of Customer Success  |  Account Health  |  Retention and Expansion  |  Executive Engagement"
-  For a Delivery role: "VP Delivery  |  Programme Governance  |  Agile Delivery  |  Multi-region Execution"
-  NEVER use: "Squad Model Leadership", "Portfolio Governance", "AI-Enabled Operations" for non-delivery roles.
+CORE COMPETENCIES — 3-column borderless table:
+  3 column headings derived from the JD's key requirement areas.
+  Each column: 1 bold teal heading + up to 5 dash-prefixed bullets (3-5 words).
 
-Line 3 [no BG, gray]:
-  Bangalore, India  |  +91 9741114967  |  ksunilmech29@gmail.com  |  linkedin.com/in/sunil-kumar-k-8b1b72a
+PROFESSIONAL EXPERIENCE — 4 roles, company line [BG F5FAFD]:
+  Each 2-sentence description must emphasise the angle the JD cares about.
+  Domain label in description must match the JD context.
+  Max 2 sentences per role. Accenture always verbatim.
 
-── PROFESSIONAL SUMMARY ──
-Heading: PROFESSIONAL SUMMARY [ALL CAPS, Navy, teal underline]
-2 paragraphs, minimum 6 lines total.
-Para 1: Who Sunil is + domain + years + leadership breadth relevant to THIS JD.
-Para 2: Metrics + geographies + outcomes relevant to THIS JD.
-Content MUST reflect the JD role type — not delivery if the role is CS/Strategy.
-No em dashes, no semicolons.
-
-── CAREER HIGHLIGHTS [BG E3F2F8 on both rows] ──
-Heading: CAREER HIGHLIGHTS [ALL CAPS, Navy, teal underline]
-EXACTLY 2 rows × 3 items = 6 items. Each row on its own line with BG E3F2F8.
-Separator between items: ◆ (diamond — NOT pipe |)
-Each item: stat + max 2 words. Total 3 words max per item.
-All 6 items must directly reflect the JD requirements.
-Example for CS role:
-  Row 1: 19+ Years Fintech  ◆  $20M Portfolio Governed  ◆  95%+ Client Retention
-  Row 2: 4 Geographies Led  ◆  50+ Stakeholders Managed  ◆  3 Platforms Delivered
-Example for Strategy role:
-  Row 1: 19+ Years Experience  ◆  4 Geographies Led  ◆  $20M Portfolio Governed
-  Row 2: 3 Transformations Led  ◆  50+ Stakeholders Managed  ◆  95%+ On-time Delivery
-
-── CORE COMPETENCIES ──
-Heading: CORE COMPETENCIES [ALL CAPS, Navy, teal underline]
-MANDATORY 3-column borderless table.
-Each column: 1 bold teal heading + up to 5 dash-prefixed bullets (3-5 words each).
-Headings MUST reflect the JD role — not the template's delivery headings.
-For CS role: Customer Success | Delivery and Governance | Leadership and Strategy
-For Strategy role: Strategy and Transformation | Stakeholder Engagement | Programme Governance
-For Delivery role: Programme Delivery | Agile Governance | Team Leadership
-NEVER flat rows, NEVER pipe-separated list.
-
-── PROFESSIONAL EXPERIENCE ──
-Heading: PROFESSIONAL EXPERIENCE [ALL CAPS, Navy, teal underline]
-4 roles in this order:
-1. Open Financial Technologies   Vice President   Apr 2022 - Present
-2. Attra   Program Manager   May 2018 - Mar 2022
-3. Deutsche Bank   Assistant Vice President   Nov 2009 - Apr 2018
-4. Accenture   Software Engineer   Nov 2006 - Oct 2009
-
-Each role:
-  COMPANY LINE [BG F5FAFD]: Company name   Title   Date Range
-  DESCRIPTION [no BG]: "[Domain Label]:  Sentence 1. Sentence 2."
-  Domain label must match the JD context — e.g. for a CS role use
-  "Fintech Customer Success:  ..." not "Fintech Delivery:  ..."
-  Max 2 sentences. Accenture uses verbatim text above.
-
-PAGE 1 PERFECT FIT: No blank space after Education.
-If gap exists after Education: extend each experience description by
-one sentence until page 1 is exactly full.
+PAGE 1 PERFECT FIT: If gap after Education, extend experience descriptions.
 Never push Education to page 2.
 
-── EDUCATION AND CERTIFICATIONS ──
-Heading: EDUCATION AND CERTIFICATIONS [ALL CAPS, Navy, teal underline]
-4 canonical entries listed above. Always on Page 1.
-
 ==========================================================================
-EXACT FORMAT — PAGE 2
+PAGE 2 FORMAT
 ==========================================================================
-
 Page break before Key Achievements. Page 2 = Key Achievements ONLY.
 
-── KEY ACHIEVEMENTS ──
-Heading: KEY ACHIEVEMENTS [ALL CAPS, Navy, teal underline]
+KEY ACHIEVEMENTS — section headings [BG EBF4FF, Navy ALL CAPS]:
+  Headings must come from the JD's key themes and requirements.
+  Order: most JD-relevant sections first.
 
-Section headings [BG EBF4FF, Navy bold ALL CAPS] MUST match the JD:
-  For CS role use sections like: CUSTOMER SUCCESS LEADERSHIP / ACCOUNT MANAGEMENT AND RETENTION / STAKEHOLDER ENGAGEMENT / PROGRAMME DELIVERY
-  For Strategy role: STRATEGY AND TRANSFORMATION / STAKEHOLDER AND EXECUTIVE ENGAGEMENT / PROGRAMME GOVERNANCE / ORGANISATIONAL CHANGE
-  For Delivery role: PROGRAMME DELIVERY EXCELLENCE / AGILE TRANSFORMATION / STAKEHOLDER GOVERNANCE / TEAM LEADERSHIP
-  NEVER use: SQUAD MODEL AND DELIVERY PREDICTABILITY, PLAYER-COACH, SPRINT KPI — unless the JD explicitly asks for these.
-
-Each section: 2-3 bullets in this exact format:
-  ●  Bold Sub-heading:  Plain text sentence 1. Plain text sentence 2 with metric.
-  - Use ● bullet character
-  - Bold sub-heading + colon, then plain text
-  - 200-250 chars per bullet, 2 sentences
-  - Varied opening verbs: Led, Drove, Designed, Established, Owned, Championed, Developed, Governed, Delivered, Managed, Scaled, Spearheaded, Directed, Executed, Defined
-  - Never repeat same opening verb more than twice
-  - Include specific metrics (%, number, geography, timeline)
+Each bullet:
+  ●  Bold Sub-heading:  Sentence 1 with outcome. Sentence 2 with metric.
+  200-250 chars, varied opening verbs (Led/Drove/Designed/Established/
+  Owned/Championed/Developed/Governed/Delivered/Managed/Scaled/Directed).
+  Never repeat same verb more than twice. Include metrics in every bullet.
 
 PAGE 2 PERFECT FIT: No blank space at bottom.
-If gap at bottom: extend existing bullets by 1 sentence or add a new bullet.
-Page 2 must never overflow to page 3.
+Extend bullets or add a bullet if a gap exists at the bottom.
 
 ==========================================================================
-HARD RULES — VIOLATION OF ANY = REBUILD REQUIRED
+HARD RULES
 ==========================================================================
-- Name on header line 1: SUNIL KUMAR K (all three words, ALL CAPS)
-- 2 pages only, both pages fully filled, no visible gaps
-- No em dashes anywhere — use colon or comma
-- No semicolons anywhere
-- No tables in body — Core Competencies table only
-- Attra: NEVER "Synechron", NEVER "Syntel", NEVER "Program Director"
-- No certifications beyond the canonical 4
-- Colors: Navy 1A3557, Teal 0D6E8A, Dark 1A1A1A, Mid-gray 444444, Light 888888
-- BG: Header rows F0F7FB, Career Highlights E3F2F8, Exp company F5FAFD, KA headings EBF4FF
-- Margins: top/bottom 576 DXA, left/right 792 DXA
-- $20M portfolio figure only if JD explicitly asks for P&L/revenue ownership
-- Do gap check internally and proceed — do not pause to ask
-- Validate every rule above before saving. Must pass 10/10.
+- Name line 1: SUNIL KUMAR K (all 3 words, ALL CAPS) — missing K = fail
+- 2 pages, both fully filled
+- No em dashes, no semicolons
+- No tables except Core Competencies
+- Attra: never Synechron/Syntel/Program Director
+- No certifications beyond canonical 4
+- Colors: Navy 1A3557, Teal 0D6E8A, BG F0F7FB/E3F2F8/F5FAFD/EBF4FF
+- Margins: 576 DXA top/bottom, 792 DXA left/right
+- $20M only if JD explicitly asks for P&L/revenue ownership
+- Gap check internally — do not pause to ask. Proceed to build.
+- Validate all rules. Must reach 10/10 before saving.
 ==========================================================================
 """
 
