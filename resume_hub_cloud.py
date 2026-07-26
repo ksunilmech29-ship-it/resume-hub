@@ -106,24 +106,51 @@ NEVER add any other certification (no PMP, Prince2, TOGAF, CFA).
 DOMAIN: Always Fintech and Financial Services - anchor all experience to banking, payments,
 lending, capital markets, or enterprise fintech contexts.
 
-RESUME RULES (all mandatory):
+EXACT TEMPLATE FORMAT (replicate precisely from master template):
+
+NAME LINE: "SUNIL KUMAR" — all caps, large bold, Navy 1A3557
+ROLE SUBTITLE: Target role keywords pipe-separated (e.g. "VP Delivery  |  Programme Governance  |  Fintech")
+CONTACT LINE: "Bangalore, India  |  +91 9741114967  |  ksunilmech29@gmail.com  |  linkedin.com/in/sunil-kumar-k-8b1b72a"
+
+SECTION HEADINGS: ALL CAPS, Navy 1A3557, with full-width teal underline rule below (e.g. "PROFESSIONAL SUMMARY", "CAREER HIGHLIGHTS", "CORE COMPETENCIES", "PROFESSIONAL EXPERIENCE", "EDUCATION AND CERTIFICATIONS", "KEY ACHIEVEMENTS")
+
+PROFESSIONAL SUMMARY: 2 paragraphs, 2-3 sentences each. Opens with domain + years. Second para covers key metric achievements. No em dashes, no semicolons.
+
+CAREER HIGHLIGHTS FORMAT — CRITICAL:
+Row 1: [Stat + 2 words]     ◆     [Stat + 2 words]     ◆     [Stat + 2 words]
+Row 2: [Stat + 2 words]     ◆     [Stat + 2 words]     ◆     [Stat + 2 words]
+Use ◆ diamond separator (NOT pipe |). Exactly 2 rows, 3 items per row = 6 total. Each item max 3 words.
+Example: "19+ Years Delivery Leadership     ◆     30% Faster Delivery Cycle     ◆     70% Digital Adoption Uplift"
+
+CORE COMPETENCIES: MANDATORY 3-column borderless table. Each column: bold teal heading + up to 5 dash-prefixed bullets (3-5 words). Headings match target role. Never flat rows, never pipe-separated.
+
+PROFESSIONAL EXPERIENCE entries format:
+Company   Title   Date Range
+[Domain context label]:  2-sentence description of achievements.
+Example: "Open Financial Technologies   Vice President   Apr 2022 - Present"
+"Enterprise AP Platform - Squad Delivery:  [sentence 1]. [sentence 2]."
+
+EDUCATION AND CERTIFICATIONS: exactly 4 entries, always Page 1.
+
+KEY ACHIEVEMENTS (Page 2 only, fill entire page):
+Section heading: bold teal, ALL CAPS words (e.g. "Squad Model and Delivery Predictability")
+Each bullet format: "• Bold Sub-heading:  Plain text sentence 1. Plain text sentence 2."
+Example: "• Sprint KPI Instrumentation:  Operationalised sprint commitment rate and cycle time tracking across delivery teams. Partnered with Scrum Masters to establish consistent squad rhythms."
+- 3-4 sections minimum, 2-3 bullets per section
+- Each bullet body: 200-250 chars total
+- Varied opening verbs: Led, Drove, Designed, Established, Owned, Championed, Developed, Governed, Delivered, Managed, Scaled, Spearheaded, Directed, Executed, Defined
+- Fill ENTIRE page 2 — no blank space
+
+HARD RULES:
 - 2 pages only, never exceed, never leave blank space on page 2
-- No em dashes anywhere, use colon or comma instead
-- No semicolons anywhere
-- No tables in experience or body sections - only the 3-column Core Competencies table is permitted
-- Career Highlights: EXACTLY 2 rows of 3 bullets each = 6 bullets total. Each bullet is a stat + max 2 words (e.g. "19+ Years Experience", "$20M Portfolio Governed", "95%+ On-time Delivery"). Rows separated by pipe dividers. Format: "19+ Years Experience  |  $20M Portfolio Governed  |  95%+ On-time Delivery"
-- Core Competencies: MANDATORY 3-column borderless table, 1 bold teal heading per column, up to 5 dash-prefixed bullets (3-5 words each). Headings must reflect the target role.
-- Each job experience description: exactly 2 sentences max
-- Education and Certifications: always on Page 1, exactly 4 entries
-- Page 1 order: Name/contact, role title (target role), Summary (2 paras, 2 sentences each), Career Highlights, Core Competencies, Experience (4 roles), Education
-- Page 2: Key Accomplishments only, 6-8 sections with teal bold headings. Each section has 2 bullets of 200-250 chars each. Fill the ENTIRE page 2 - no blank space at bottom.
-- Varied opening verbs per bullet (Led, Drove, Designed, Established, Owned, Championed, Developed, Governed, Delivered, Managed, Scaled, Spearheaded, Directed, Executed, Defined). Never repeat same verb more than twice.
-- No leading symbols on bullet body text - plain text starting with verb
-- Use "Attra" NEVER "Synechron" NEVER "Syntel" NEVER any other variant
+- No em dashes, no semicolons anywhere
+- No tables except Core Competencies
+- Use "Attra" NEVER "Synechron" NEVER "Syntel"
+- Attra title always "Program Manager" NEVER "Program Director"
 - Colors: Navy 1A3557, Teal 0D6E8A, Dark text 1A1A1A, Mid-gray 444444, Light-gray 888888
-- Page margins: top/bottom 576 DXA (0.4 inch), left/right 792 DXA (0.55 inch), content width 10656 DXA
+- Page margins: top/bottom 576 DXA (0.4 inch), left/right 792 DXA (0.55 inch)
 - Portfolio/revenue ($20M) only if JD explicitly mentions P&L or revenue ownership
-- Do gap check internally, proceed without asking for confirmation
+- Do gap check internally, proceed without asking
 - Validate to 10/10 before saving
 """
 
