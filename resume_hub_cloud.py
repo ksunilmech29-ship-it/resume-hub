@@ -183,8 +183,15 @@ Each bullet:
   Owned/Championed/Developed/Governed/Delivered/Managed/Scaled/Directed).
   Never repeat same verb more than twice. Include metrics in every bullet.
 
-PAGE 2 PERFECT FIT: No blank space at bottom.
-Extend bullets or add a bullet if a gap exists at the bottom.
+PAGE 2 MUST BE FILLED TO WITHIN 2 LINES OF THE BOTTOM EDGE.
+After writing all bullets, check if blank space remains at the bottom.
+If yes — do NOT leave it empty. Take one of these actions:
+  (a) Extend the last 2-3 bullets by adding one more sentence each, OR
+  (b) Add a new bullet under the last section, OR
+  (c) Add a new section (e.g. STAKEHOLDER ENGAGEMENT or CROSS-FUNCTIONAL LEADERSHIP)
+      with 2 bullets.
+Keep adding content until the last line sits within 2 rows of the bottom margin.
+Page 2 must never overflow to a third page.
 
 ==========================================================================
 HARD RULES
