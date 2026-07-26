@@ -653,7 +653,7 @@ textarea{height:120px;resize:vertical}
 .b-error{background:#fef2f2;color:#b91c1c}
 .job-meta{font-size:11px;color:#999;margin-top:6px}
 .drive-link{display:block;margin-top:8px;padding:9px 12px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;font-size:13px;color:#16a34a;font-weight:500;text-decoration:none;text-align:center}
-.job-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-top:10px}
+.job-actions{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:7px;margin-top:10px}
 .ja-btn{padding:8px 6px;font-size:12px;font-weight:500;border:1px solid #ddd;border-radius:7px;background:#fff;color:#111;cursor:pointer;text-align:center}
 .ja-btn:disabled{opacity:.35;cursor:default}
 .ja-del{border-color:#fecaca;color:#dc2626}
@@ -815,11 +815,12 @@ function renderJobs() {
   el.innerHTML = jobs.map(j => {
     const bClass = {pending:'b-pending',building:'b-building',done:'b-done',error:'b-error'}[j.status] || 'b-pending';
     const bLabel = {pending:'Pending',building:'Building...',done:'Done',error:'Error'}[j.status] || j.status;
-    const canBuild = j.status === 'pending' || j.status === 'error';
-    const showLog  = j.build_log && (j.status === 'building' || j.status === 'error' || (j.status === 'done' && !j.drive_link));
-    const logHtml  = showLog ? `<div class="log-box">${esc(j.build_log.slice(-600))}</div>` : '';
-    const driveHtml = j.drive_link ? `<a class="drive-link" href="${esc(j.drive_link)}" target="_blank">&#128194; Open in Google Drive</a>` : '';
-    const replyHtml = j.status === 'error' ? `
+    const canBuild    = j.status === 'pending' || j.status === 'error';
+    const canRecreate = j.status === 'done';
+    const showLog     = j.build_log && (j.status === 'building' || j.status === 'error' || (j.status === 'done' && !j.drive_link));
+    const logHtml     = showLog ? `<div class="log-box">${esc(j.build_log.slice(-600))}</div>` : '';
+    const driveHtml   = j.drive_link ? `<a class="drive-link" href="${esc(j.drive_link)}" target="_blank">&#128194; Open in Google Drive</a>` : '';
+    const replyHtml   = j.status === 'error' ? `
       <div style="margin-top:8px">
         <textarea id="reply-${j.id}" placeholder="Instructions e.g. reframe domain as enterprise SaaS..."
           style="width:100%;padding:9px;border:1px solid #ddd;border-radius:8px;font-size:13px;height:70px;resize:none;font-family:inherit"></textarea>
@@ -827,15 +828,25 @@ function renderJobs() {
           &#9654; Retry with instructions
         </button>
       </div>` : '';
+    const recreateHtml = canRecreate ? `
+      <div id="recreate-box-${j.id}" style="display:none;margin-top:10px">
+        <textarea id="recreate-note-${j.id}" placeholder="Reason for recreating, e.g: better match the strategy focus, sharpen the CS angle, fix page 2 gaps…"
+          style="width:100%;padding:9px;border:1px solid #ddd;border-radius:8px;font-size:13px;height:70px;resize:none;font-family:inherit"></textarea>
+        <button onclick="submitRecreate(${j.id})" style="width:100%;margin-top:6px;padding:9px;background:#1a3557;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer">
+          &#9654; Recreate with these instructions
+        </button>
+        <button onclick="document.getElementById('recreate-box-${j.id}').style.display='none'" style="width:100%;margin-top:5px;padding:8px;background:#f0f0f0;color:#444;border:none;border-radius:8px;font-size:12px;cursor:pointer">Cancel</button>
+      </div>` : '';
     return `<div class="job-card" id="card-${j.id}">
   <div class="job-head">
     <div><div class="job-title">${esc(j.title)}</div><div class="job-co">${esc(j.company)}</div></div>
     <span class="badge ${bClass}">${bLabel}</span>
   </div>
   <div class="job-meta">${j.created_at.slice(0,16).replace('T',' ')}${j.built_at ? ' &middot; built ' + j.built_at : ''}</div>
-  ${driveHtml}${logHtml}${replyHtml}
+  ${driveHtml}${logHtml}${replyHtml}${recreateHtml}
   <div class="job-actions">
     <button class="ja-btn" onclick="buildOne(${j.id})" ${canBuild?'':'disabled'}>&#9654; Build</button>
+    <button class="ja-btn" onclick="toggleRecreate(${j.id})" ${canRecreate?'':'disabled'} style="${canRecreate?'border-color:#1a3557;color:#1a3557':''}">&#128260; Recreate</button>
     <button class="ja-btn" onclick="editJob(${j.id})">&#9998; Edit</button>
     <button class="ja-btn ja-del" onclick="deleteJob(${j.id})">&#128465; Delete</button>
   </div>
@@ -853,6 +864,25 @@ async function buildOne(id) {
   const d = await api(`/api/jobs/${id}/build`, 'POST');
   if (d.ok) { toast('Build started — 2-3 mins'); setTimeout(loadJobs, 1500); }
   else toast('Error: ' + (d.error||''), 4000);
+}
+
+function toggleRecreate(id) {
+  const box = document.getElementById('recreate-box-' + id);
+  if (!box) return;
+  box.style.display = box.style.display === 'none' ? 'block' : 'none';
+}
+
+async function submitRecreate(id) {
+  const note = (document.getElementById('recreate-note-' + id) || {}).value || '';
+  const instructions = note.trim() ? `Recreate this resume. Reason: ${note}` : 'Recreate this resume with improved JD alignment.';
+  const d = await api(`/api/jobs/${id}/reply`, 'POST', {reply: instructions});
+  if (d.ok) {
+    document.getElementById('recreate-box-' + id).style.display = 'none';
+    toast('Recreating resume…');
+    setTimeout(loadJobs, 1500);
+  } else {
+    toast('Error: ' + (d.error || 'unknown'), 4000);
+  }
 }
 
 async function replyBuild(id) {
