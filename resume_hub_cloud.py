@@ -106,48 +106,89 @@ NEVER add any other certification (no PMP, Prince2, TOGAF, CFA).
 DOMAIN: Always Fintech and Financial Services - anchor all experience to banking, payments,
 lending, capital markets, or enterprise fintech contexts.
 
-EXACT TEMPLATE FORMAT (replicate precisely from master template):
+EXACT TEMPLATE FORMAT — REPLICATE PRECISELY:
 
-NAME LINE: "SUNIL KUMAR" — all caps, large bold, Navy 1A3557
-ROLE SUBTITLE: Target role keywords pipe-separated (e.g. "VP Delivery  |  Programme Governance  |  Fintech")
-CONTACT LINE: "Bangalore, India  |  +91 9741114967  |  ksunilmech29@gmail.com  |  linkedin.com/in/sunil-kumar-k-8b1b72a"
+━━━ HEADER (3 lines, background color F0F7FB on lines 1 and 2) ━━━
+Line 1 [BG F0F7FB]: "SUNIL KUMAR K" — ALL CAPS, large bold, Navy 1A3557
+Line 2 [BG F0F7FB]: Target role title + pipe-separated keywords matching the JD
+  Example: "Head of GTM and Growth  |  Revenue Growth and ARR Expansion  |  AI-powered GTM  |  Product-Led Growth"
+  Adapt keywords to every role — always 3-5 pipe-separated specialism phrases
+Line 3 [no BG]: "Bangalore, India  |  +91 9741114967  |  ksunilmech29@gmail.com  |  linkedin.com/in/sunil-kumar-k-8b1b72a"
 
-SECTION HEADINGS: ALL CAPS, Navy 1A3557, with full-width teal underline rule below (e.g. "PROFESSIONAL SUMMARY", "CAREER HIGHLIGHTS", "CORE COMPETENCIES", "PROFESSIONAL EXPERIENCE", "EDUCATION AND CERTIFICATIONS", "KEY ACHIEVEMENTS")
+━━━ PROFESSIONAL SUMMARY ━━━
+Section heading: "PROFESSIONAL SUMMARY" — ALL CAPS, Navy, teal underline rule
+2 paragraphs, MINIMUM 6 lines total (3 sentences per paragraph minimum)
+Para 1: Domain expertise + years + delivery/leadership breadth
+Para 2: Key quantified achievements (metrics, geographies, scale)
+No em dashes, no semicolons.
 
-PROFESSIONAL SUMMARY: 2 paragraphs, 2-3 sentences each. Opens with domain + years. Second para covers key metric achievements. No em dashes, no semicolons.
+━━━ CAREER HIGHLIGHTS (background color E3F2F8 on both rows) ━━━
+Section heading: "CAREER HIGHLIGHTS" — ALL CAPS, Navy, teal underline rule
+EXACTLY 2 rows x 3 items = 6 items total. Each row has BG E3F2F8.
+Separator: ◆ diamond (NOT pipe). Each item = stat + max 2 words (3 words total).
+All 6 items must be relevant to the target JD — never generic placeholders.
+Row format: "[Stat Phrase]     ◆     [Stat Phrase]     ◆     [Stat Phrase]"
+Example Row 1: "19+ Years Delivery Leadership     ◆     30% Faster Delivery Cycle     ◆     70% Digital Adoption Uplift"
+Example Row 2: "100% On-Time Regulatory Delivery     ◆     50% Utilisation Improvement     ◆     40% Reduction in Manual Overhead"
 
-CAREER HIGHLIGHTS FORMAT — CRITICAL:
-Row 1: [Stat + 2 words]     ◆     [Stat + 2 words]     ◆     [Stat + 2 words]
-Row 2: [Stat + 2 words]     ◆     [Stat + 2 words]     ◆     [Stat + 2 words]
-Use ◆ diamond separator (NOT pipe |). Exactly 2 rows, 3 items per row = 6 total. Each item max 3 words.
-Example: "19+ Years Delivery Leadership     ◆     30% Faster Delivery Cycle     ◆     70% Digital Adoption Uplift"
+━━━ CORE COMPETENCIES ━━━
+Section heading: "CORE COMPETENCIES" — ALL CAPS, Navy, teal underline rule
+MANDATORY 3-column borderless table. Each column: 1 bold teal heading + up to 5 dash-prefixed bullets (3-5 words each).
+Headings must reflect the target role profile. Never flat rows, never pipe-separated.
 
-CORE COMPETENCIES: MANDATORY 3-column borderless table. Each column: bold teal heading + up to 5 dash-prefixed bullets (3-5 words). Headings match target role. Never flat rows, never pipe-separated.
+━━━ PROFESSIONAL EXPERIENCE ━━━
+Section heading: "PROFESSIONAL EXPERIENCE" — ALL CAPS, Navy, teal underline rule
+4 roles in this order (most recent first):
+1. Open Financial Technologies   Vice President   Apr 2022 - Present
+2. Attra   Program Manager   May 2018 - Mar 2022  [NEVER "Synechron", NEVER "Program Director"]
+3. Deutsche Bank   Assistant Vice President   Nov 2009 - Apr 2018
+4. Accenture   Software Engineer   Nov 2006 - Oct 2009
 
-PROFESSIONAL EXPERIENCE entries format:
-Company   Title   Date Range
-[Domain context label]:  2-sentence description of achievements.
-Example: "Open Financial Technologies   Vice President   Apr 2022 - Present"
-"Enterprise AP Platform - Squad Delivery:  [sentence 1]. [sentence 2]."
+Each role format:
+COMPANY LINE [BG F5FAFD]: "Company   Title   Date Range" — light blue background on this line only
+DESCRIPTION LINE [no BG]: "[Domain Context Label - Sub-label]:  Sentence 1. Sentence 2."
+  Domain label format: "Banking and Financial Services - Squad Model:  [description]"
+  Max 2 sentences. Adapt label and description to target JD.
+  Accenture description always VERBATIM: "Banking, Insurance and Healthcare:  Built strong product and domain foundation across Banking, Insurance and Healthcare - contributed to product development, user story definition and process standardization, informing subsequent partnership and product strategy roles."
 
-EDUCATION AND CERTIFICATIONS: exactly 4 entries, always Page 1.
+PAGE 1 MUST BE PERFECT FIT — no blank space after certifications.
+If there is a gap after Education: extend each experience description by 1 line until page 1 is full.
+Never push Education to page 2.
 
-KEY ACHIEVEMENTS (Page 2 only, fill entire page):
-Section heading: bold teal, ALL CAPS words (e.g. "Squad Model and Delivery Predictability")
-Each bullet format: "• Bold Sub-heading:  Plain text sentence 1. Plain text sentence 2."
-Example: "• Sprint KPI Instrumentation:  Operationalised sprint commitment rate and cycle time tracking across delivery teams. Partnered with Scrum Masters to establish consistent squad rhythms."
-- 3-4 sections minimum, 2-3 bullets per section
-- Each bullet body: 200-250 chars total
-- Varied opening verbs: Led, Drove, Designed, Established, Owned, Championed, Developed, Governed, Delivered, Managed, Scaled, Spearheaded, Directed, Executed, Defined
-- Fill ENTIRE page 2 — no blank space
+━━━ EDUCATION AND CERTIFICATIONS ━━━
+Section heading: "EDUCATION AND CERTIFICATIONS" — ALL CAPS, Navy, teal underline rule
+Exactly these 4 entries, in this order, always on Page 1:
+1. Executive Global Management Programme  -  IIM Calcutta  |  2014 - 2016
+2. Bachelor of Engineering  -  Visvesvaraya Technological University  |  2002 - 2006
+3. SAFe 5 Agilist  -  Scaled Agile Inc.  |  Dec 2022
+4. Certified Scrum Master (CSM)  -  Scrum Alliance
 
-HARD RULES:
-- 2 pages only, never exceed, never leave blank space on page 2
-- No em dashes, no semicolons anywhere
+━━━ KEY ACHIEVEMENTS (Page 2 — must fill entire page, no blank space) ━━━
+Page break before this section. Page 2 contains ONLY Key Achievements.
+ORDER: Most JD-relevant sections first. Generic delivery/stakeholder sections at bottom.
+
+Section heading format [BG EBF4FF]: "SECTION HEADING IN ALL CAPS" — light blue background, Navy bold
+Each section has 2-3 bullets in this format:
+"●  Bold Sub-heading:  Plain text sentence 1 achieving X outcome. Plain text sentence 2 with specific metric or result."
+  - Use ● bullet (not •, not ▸, not -)
+  - Bold sub-heading followed by colon, then plain text
+  - Each bullet: 200-250 chars total, 2 sentences
+  - Varied opening verbs: Led, Drove, Designed, Established, Owned, Championed, Developed, Governed, Delivered, Managed, Scaled, Spearheaded, Directed, Executed, Defined
+  - Never start more than 2 bullets with the same verb
+  - Include specific metrics in every bullet where possible
+
+PAGE 2 MUST BE PERFECT FIT — no blank space at bottom.
+If there is a gap at bottom of page 2: extend existing bullets by 1 sentence or add a new relevant bullet.
+
+━━━ HARD RULES ━━━
+- 2 pages only — never exceed, both pages must be full with no visible gaps
+- No em dashes anywhere — use colon or comma instead
+- No semicolons anywhere
 - No tables except Core Competencies
-- Use "Attra" NEVER "Synechron" NEVER "Syntel"
+- Use "Attra" NEVER "Synechron" NEVER "Syntel" NEVER "Attra (Synechron)"
 - Attra title always "Program Manager" NEVER "Program Director"
 - Colors: Navy 1A3557, Teal 0D6E8A, Dark text 1A1A1A, Mid-gray 444444, Light-gray 888888
+- BG colors: Header/subtitle F0F7FB, Career Highlights rows E3F2F8, Experience company line F5FAFD, KA headings EBF4FF
 - Page margins: top/bottom 576 DXA (0.4 inch), left/right 792 DXA (0.55 inch)
 - Portfolio/revenue ($20M) only if JD explicitly mentions P&L or revenue ownership
 - Do gap check internally, proceed without asking
