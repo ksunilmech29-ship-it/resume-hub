@@ -209,16 +209,48 @@ def _get_drive_service():
     )
     return build('drive', 'v3', credentials=creds)
 
-def upload_to_drive(file_path, filename):
+def _get_or_create_folder(service, name, parent_id):
+    """Get existing subfolder by name or create it under parent_id."""
+    query = (f"name='{name}' and mimeType='application/vnd.google-apps.folder' "
+             f"and '{parent_id}' in parents and trashed=false")
+    results = service.files().list(q=query, fields='files(id)').execute()
+    files = results.get('files', [])
+    if files:
+        return files[0]['id']
+    folder = service.files().create(
+        body={'name': name, 'mimeType': 'application/vnd.google-apps.folder', 'parents': [parent_id]},
+        fields='id'
+    ).execute()
+    return folder['id']
+
+def upload_to_drive(file_path, filename, job=None):
     from googleapiclient.http import MediaFileUpload
-    folder_id = os.environ.get('GOOGLE_DRIVE_FOLDER_ID', '')
-    service   = _get_drive_service()
+    root_folder_id = os.environ.get('GOOGLE_DRIVE_FOLDER_ID', '')
+    service = _get_drive_service()
+
+    # Build subfolder name: YYYY-MM-DD_Title_Company
+    date_str = datetime.now().strftime('%Y-%m-%d')
+    if job:
+        def slug(s): return re.sub(r'[^A-Za-z0-9]', '_', s).strip('_')
+        title_slug   = '_'.join(slug(job.get('title', '')).split('_')[:4])
+        company_slug = '_'.join(slug(job.get('company', '')).split('_')[:2])
+        subfolder_name = f"{date_str}_{title_slug}_{company_slug}"
+    else:
+        subfolder_name = date_str
+
+    # Create or reuse subfolder inside root Drive folder
+    if root_folder_id:
+        target_folder_id = _get_or_create_folder(service, subfolder_name, root_folder_id)
+    else:
+        target_folder_id = None
+
     meta = {
-        'name':    filename,
+        'name': filename,
         'mimeType': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     }
-    if folder_id:
-        meta['parents'] = [folder_id]
+    if target_folder_id:
+        meta['parents'] = [target_folder_id]
+
     media = MediaFileUpload(
         file_path,
         mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
@@ -340,7 +372,7 @@ def _do_build(job_id, db_path, extra=''):
         drive_link = ''
         drive_error = ''
         try:
-            drive_link = upload_to_drive(output_path, fname)
+            drive_link = upload_to_drive(output_path, fname, job=job)
         except Exception as e:
             drive_error = str(e)
 
