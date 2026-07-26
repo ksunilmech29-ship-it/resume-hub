@@ -260,6 +260,32 @@ def upload_to_drive(file_path, filename, job=None):
         fileId=f['id'],
         body={'role': 'reader', 'type': 'anyone'}
     ).execute()
+
+    # Upload job_info.txt with full job details including URL
+    if job and target_folder_id:
+        import io
+        info = (
+            f"Job Title : {job.get('title', '')}\n"
+            f"Company   : {job.get('company', '')}\n"
+            f"Job URL   : {job.get('url', '(not provided)')}\n"
+            f"Built On  : {datetime.now().strftime('%Y-%m-%d %H:%M')}\n"
+            f"Resume    : {filename}\n"
+        )
+        from googleapiclient.http import MediaIoBaseUpload
+        info_media = MediaIoBaseUpload(
+            io.BytesIO(info.encode('utf-8')),
+            mimetype='text/plain'
+        )
+        info_file = service.files().create(
+            body={'name': 'job_info.txt', 'parents': [target_folder_id]},
+            media_body=info_media,
+            fields='id'
+        ).execute()
+        service.permissions().create(
+            fileId=info_file['id'],
+            body={'role': 'reader', 'type': 'anyone'}
+        ).execute()
+
     return f.get('webViewLink', '')
 
 # ── Resume builder ────────────────────────────────────────────────────────────
