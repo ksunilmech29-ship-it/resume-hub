@@ -155,6 +155,11 @@ PROFESSIONAL SUMMARY — 2 paragraphs, min 6 lines:
 CAREER HIGHLIGHTS [BG E3F2F8, both rows]:
   Exactly 2 rows × 3 items = 6 items. Separator: ◆ (not |).
   Each item: stat + max 2 words. Choose stats that match the JD priorities.
+  ALIGNMENT: Both rows MUST be center-aligned (WD_ALIGN_PARAGRAPH.CENTER).
+  Row 1 example: "19+ Years Experience  ◆  $20M Portfolio  ◆  95%+ On-time"
+  Row 2 example: "60+ Team Scaled  ◆  92% Retention  ◆  4 Countries Led"
+  Each row is ONE paragraph, center-aligned, with ◆ as separator between items.
+  NEVER left-align this section. NEVER use bullet points here.
 
 CORE COMPETENCIES — 3-column borderless table:
   3 column headings derived from the JD's key requirement areas.
@@ -165,8 +170,20 @@ PROFESSIONAL EXPERIENCE — 4 roles, company line [BG F5FAFD]:
   Domain label in description must match the JD context.
   Max 2 sentences per role. Accenture always verbatim.
 
-PAGE 1 PERFECT FIT: If gap after Education, extend experience descriptions.
-Never push Education to page 2.
+PAGE 1 MUST CONTAIN — in this exact order, all fitting within page 1:
+  1. Header (Name + Role + Contact)
+  2. Professional Summary (2 paragraphs)
+  3. Career Highlights (2 rows)
+  4. Core Competencies (3-col table)
+  5. Professional Experience (4 roles, 2 sentences each)
+  6. Education and Certifications (all 4 entries)
+
+EDUCATION MUST ALWAYS BE ON PAGE 1 — THIS IS A HARD RULE.
+If page 1 is overflowing:
+  - Cut Summary to 2 very tight sentences per paragraph (4 lines total)
+  - Cut each Experience description to 1-2 lines maximum
+  - NEVER remove Education. NEVER push Education to page 2.
+  - Reduce font size of body text to 9pt if needed, but keep Education on page 1.
 
 ==========================================================================
 PAGE 2 FORMAT
@@ -183,15 +200,23 @@ Each bullet:
   Owned/Championed/Developed/Governed/Delivered/Managed/Scaled/Directed).
   Never repeat same verb more than twice. Include metrics in every bullet.
 
-PAGE 2 MUST BE FILLED TO WITHIN 2 LINES OF THE BOTTOM EDGE.
-After writing all bullets, check if blank space remains at the bottom.
-If yes — do NOT leave it empty. Take one of these actions:
-  (a) Extend the last 2-3 bullets by adding one more sentence each, OR
-  (b) Add a new bullet under the last section, OR
-  (c) Add a new section (e.g. STAKEHOLDER ENGAGEMENT or CROSS-FUNCTIONAL LEADERSHIP)
-      with 2 bullets.
-Keep adding content until the last line sits within 2 rows of the bottom margin.
-Page 2 must never overflow to a third page.
+PAGE 2 FILL RULE — MANDATORY, NO EXCEPTIONS:
+Page 2 MUST be filled to within 2 lines of the bottom edge.
+A page 2 with empty space at the bottom = AUTOMATIC FAIL.
+
+COUNTING RULE: A standard page 2 holds approximately 55-60 lines of body text.
+After writing your bullets, count the lines used. If below 53 lines, ADD MORE CONTENT.
+
+ACTION SEQUENCE — execute in order until page 2 is full:
+  STEP 1: Extend the last 2-3 bullets — add one extra sentence to each (~80 chars).
+  STEP 2: If still not full, add a new bullet to the last section.
+  STEP 3: If still not full, add a new section "STAKEHOLDER ENGAGEMENT AND
+           CROSS-FUNCTIONAL LEADERSHIP" with 2 fully written bullets.
+  STEP 4: If still not full, add another section "DELIVERY EXCELLENCE AND
+           OPERATIONAL GOVERNANCE" with 2 bullets.
+
+Keep executing steps until page 2 is full. Do not stop at STEP 1 if it is not enough.
+Page 2 must NEVER overflow to a third page.
 
 ==========================================================================
 HARD RULES
