@@ -606,6 +606,39 @@ def api_settings_save():
         set_setting('gmail_pass', d['gmail_pass'].strip())
     return jsonify({'ok': True})
 
+@app.route('/api/jobboard')
+def api_jobboard():
+    jobs = []
+    sources = []
+    generated_at = ''
+
+    # Cloud: reads daily scrape only (no localhost:5000 available on Render)
+    jobs_file = os.path.join(BASE, 'docs', 'jobs_data.json')
+    if os.path.exists(jobs_file):
+        try:
+            with open(jobs_file, encoding='utf-8') as f:
+                data = json.load(f)
+            generated_at = data.get('generated_at', '')
+            for j in data.get('jobs', []):
+                jobs.append({
+                    'title':       j.get('title', ''),
+                    'company':     j.get('company', ''),
+                    'location':    j.get('location', ''),
+                    'source':      j.get('source', 'Daily Scrape'),
+                    'date_posted': j.get('date_posted', ''),
+                    'job_url':     j.get('job_url', ''),
+                    'description': j.get('description', ''),
+                    'score':       '',
+                    'key_skills':  '',
+                    'is_new':      1,
+                    '_from':       'daily',
+                })
+            sources.append(f'Daily scrape ({len(data.get("jobs", []))} jobs)')
+        except Exception:
+            pass
+
+    return jsonify({'jobs': jobs, 'total': len(jobs), 'sources': sources, 'generated_at': generated_at})
+
 @app.route('/health')
 def health():
     return jsonify({
@@ -678,6 +711,7 @@ textarea{height:120px;resize:vertical}
 </div>
 <div class="tabs">
   <div class="tab active" onclick="showTab('add')">Add Job</div>
+  <div class="tab" onclick="showTab('board')">Job Board</div>
   <div class="tab" onclick="showTab('queue')">Queue</div>
   <div class="tab" onclick="showTab('settings')">Settings</div>
 </div>
@@ -695,6 +729,15 @@ textarea{height:120px;resize:vertical}
     <button class="btn btn-primary" onclick="addAndBuild()">&#9654; Add &amp; Build Resume</button>
     <button class="btn" style="background:#f5f5f5;color:#444;margin-top:8px" onclick="addOnly()">&#43; Add to Queue Only</button>
   </div>
+</div>
+
+<div class="pane" id="pane-board">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+    <span style="font-size:12px;color:#999" id="board-meta">Loading…</span>
+    <button onclick="loadBoard()" style="padding:6px 14px;border:1px solid #ddd;border-radius:8px;background:#fff;font-size:12px;cursor:pointer">&#8635; Refresh</button>
+  </div>
+  <div id="board-filter" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>
+  <div id="board-list"><div class="empty">Loading jobs…</div></div>
 </div>
 
 <div class="pane" id="pane-queue">
@@ -745,11 +788,102 @@ function showTab(name) {
   document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('pane-' + name).classList.add('active');
-  ['add','queue','settings'].forEach((n,i) => {
-    if (n === name) document.querySelectorAll('.tab')[i].classList.add('active');
-  });
+  const tabs = ['add','board','queue','settings'];
+  document.querySelectorAll('.tab')[tabs.indexOf(name)].classList.add('active');
   if (name === 'queue') loadJobs();
   if (name === 'settings') loadSettings();
+  if (name === 'board') loadBoard();
+}
+
+// ── Job Board ──────────────────────────────────────────────────────────────
+let boardJobs = [];
+let boardFilter = '';
+let boardSearch = '';
+
+async function loadBoard() {
+  document.getElementById('board-list').innerHTML = '<div class="empty">Loading…</div>';
+  const d = await api('/api/jobboard');
+  if (d.error && !d.jobs) { document.getElementById('board-list').innerHTML = `<div class="empty">${esc(d.error)}</div>`; return; }
+  boardJobs = d.jobs || [];
+  const srcLabel = (d.sources||[]).join(' + ') || `${boardJobs.length} jobs`;
+  document.getElementById('board-meta').textContent = `${srcLabel}${d.generated_at ? ' · ' + d.generated_at : ''}`;
+  renderBoardFilter();
+  renderBoard();
+}
+
+function renderBoardFilter() {
+  const sources = [...new Set(boardJobs.map(j => j.source).filter(Boolean))];
+  const el = document.getElementById('board-filter');
+  const chip = (val, label, active) =>
+    `<button onclick="setBoardFilter('${val}')" style="padding:5px 12px;border-radius:20px;border:1px solid ${active?'#1a3557':'#ddd'};background:${active?'#1a3557':'#fff'};color:${active?'#fff':'#444'};font-size:12px;cursor:pointer">${label}</button>`;
+  el.innerHTML =
+    `<input type="text" placeholder="Search title / company…" oninput="setBoardSearch(this.value)"
+      style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;margin-bottom:8px;font-family:inherit"/>` +
+    chip('', 'All', boardFilter==='') +
+    sources.map(s => chip(s, s, boardFilter===s)).join('');
+}
+
+function setBoardFilter(src) {
+  boardFilter = src;
+  renderBoardFilter();
+  renderBoard();
+}
+
+function setBoardSearch(val) {
+  boardSearch = val.toLowerCase();
+  renderBoard();
+}
+
+function renderBoard() {
+  const el = document.getElementById('board-list');
+  let filtered = boardFilter ? boardJobs.filter(j => j.source === boardFilter) : boardJobs;
+  if (boardSearch) filtered = filtered.filter(j =>
+    (j.title||'').toLowerCase().includes(boardSearch) ||
+    (j.company||'').toLowerCase().includes(boardSearch)
+  );
+  if (!filtered.length) { el.innerHTML = '<div class="empty">No jobs found.</div>'; return; }
+  el.innerHTML = filtered.slice(0, 150).map((j) => {
+    const idx = boardJobs.indexOf(j);
+    const posted = j.date_posted ? j.date_posted : '';
+    const scoreHtml = j.score ? `<span style="background:#f0fdf4;color:#16a34a;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:6px">Score ${j.score}</span>` : '';
+    const newBadge  = j.is_new  ? `<span style="background:#fef9c3;color:#854d0e;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:4px">New</span>` : '';
+    const skills = j.key_skills ? `<div style="font-size:11px;color:#666;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(j.key_skills.slice(0,120))}</div>` : '';
+    return `<div class="job-card" id="bcard-${idx}">
+  <div class="job-head">
+    <div style="flex:1;min-width:0">
+      <div class="job-title">${esc(j.title)}${newBadge}${scoreHtml}</div>
+      <div class="job-co">${esc(j.company)}${j.location ? ' · ' + esc(j.location) : ''}</div>
+    </div>
+    <span class="badge" style="background:#f0f4ff;color:#1a3557;flex-shrink:0">${esc(j.source||'')}</span>
+  </div>
+  <div class="job-meta">${posted}</div>
+  ${skills}
+  <div style="display:flex;gap:8px;margin-top:10px">
+    ${j.job_url ? `<a href="${esc(j.job_url)}" target="_blank" style="flex:1;padding:8px 0;text-align:center;border:1px solid #ddd;border-radius:7px;font-size:12px;color:#1a56db;text-decoration:none">&#128279; View</a>` : '<span style="flex:1"></span>'}
+    <button onclick="addBoardJobToQueue(${idx})" id="badd-${idx}" style="flex:2;padding:8px 0;background:#111;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer">+ Add to Queue</button>
+  </div>
+</div>`;
+  }).join('') + (filtered.length > 150 ? `<div class="empty" style="padding:12px">Showing 150 of ${filtered.length} — use search to narrow down</div>` : '');
+}
+
+async function addBoardJobToQueue(idx) {
+  const j = boardJobs[idx];
+  if (!j) return;
+  const btn = document.getElementById('badd-' + idx);
+  if (btn) { btn.disabled = true; btn.textContent = 'Adding…'; }
+  const d = await api('/api/jobs', 'POST', {
+    title:   j.title,
+    company: j.company,
+    url:     j.job_url || '',
+    jd:      j.description || '',
+  });
+  if (d.id) {
+    if (btn) { btn.textContent = '✓ Added'; btn.style.background = '#16a34a'; }
+    toast(`"${j.title}" added to queue`);
+  } else {
+    if (btn) { btn.disabled = false; btn.textContent = '+ Add to Queue'; }
+    toast('Error: ' + (d.error || 'unknown'), 3000);
+  }
 }
 
 function toast(msg, ms=2500) {
