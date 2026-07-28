@@ -166,11 +166,12 @@ CAREER HIGHLIGHTS — BUILD AS A 5-COLUMN BORDERLESS TABLE (not paragraphs):
   All borders: none. All cells: center-aligned. Table shading: E3F2F8.
 
   Item cells — each cell contains ONE paragraph, center-aligned, with 2 runs:
-    Run 1: STAT   — bold, Navy 1A3557, font size 32pt (sz=64 half-points)
-    Run 2: LABEL  — italic, Teal 0D6E8A, font size 18pt (sz=36 half-points), space-prefixed
+    Run 1: STAT   — bold, Navy 1A3557, font size 14pt (sz=28 half-points)
+    Run 2: LABEL  — italic, Teal 0D6E8A, font size 10pt (sz=20 half-points), space-prefixed
+    LABEL must be MAX 2 WORDS — never 3. Stat+label combined must stay under 20 chars.
 
   Separator cells — ONE paragraph, text "|":
-    Color: Light gray 888888, font size 24pt (sz=48), center-aligned
+    Color: Light gray 888888, font size 11pt (sz=22), center-aligned
 
   Row spacing: space_before=80, space_after=20 for row 1
                space_before=20, space_after=80 for row 2
