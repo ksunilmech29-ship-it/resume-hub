@@ -80,6 +80,20 @@ def _get_setting_direct(db_path, key, default=''):
 
 PROFILE = """
 ==========================================================================
+GOLD STANDARD REFERENCE: master_template.docx (same folder as this script)
+The reference resume REFERENCE_FORMAT_RESUME.docx shows the correct format.
+Match it EXACTLY for these 3 non-negotiable elements:
+  1. Career Highlights: MUST be center-aligned. 2 rows x 3 items. ◆ separator.
+     Each row is ONE paragraph with WD_ALIGN_PARAGRAPH.CENTER.
+     NEVER left-align. NEVER use bullet characters in this section.
+  2. Education and Certifications: MUST appear on Page 1, after Experience.
+     If page 1 is tight, shorten Summary and Experience — never move Education.
+  3. Page 2: MUST be filled to within 2 lines of bottom edge.
+     Add bullets, extend bullets, or add sections until page 2 is full.
+     Empty space at bottom of page 2 = automatic fail.
+==========================================================================
+
+==========================================================================
 STEP 1 — READ THE JD FIRST. BEFORE WRITING ANYTHING:
 Extract from the JD: the core role theme, key responsibilities, required
 skills, and priority keywords. Every section of this resume — header
@@ -152,14 +166,26 @@ PROFESSIONAL SUMMARY — 2 paragraphs, min 6 lines:
   Para 2: quantified outcomes relevant to the JD requirements.
   No em dashes, no semicolons.
 
-CAREER HIGHLIGHTS [BG E3F2F8, both rows]:
-  Exactly 2 rows × 3 items = 6 items. Separator: ◆ (not |).
-  Each item: stat + max 2 words. Choose stats that match the JD priorities.
-  ALIGNMENT: Both rows MUST be center-aligned (WD_ALIGN_PARAGRAPH.CENTER).
-  Row 1 example: "19+ Years Experience  ◆  $20M Portfolio  ◆  95%+ On-time"
-  Row 2 example: "60+ Team Scaled  ◆  92% Retention  ◆  4 Countries Led"
-  Each row is ONE paragraph, center-aligned, with ◆ as separator between items.
-  NEVER left-align this section. NEVER use bullet points here.
+CAREER HIGHLIGHTS — BUILD AS A 5-COLUMN BORDERLESS TABLE (not paragraphs):
+  Structure: [item] [sep] [item] [sep] [item]  — 2 table rows, BG E3F2F8 throughout
+  Column widths (DXA): 3300 | 378 | 3300 | 378 | 3300  (total = 10656)
+  All borders: none. All cells: center-aligned. Table shading: E3F2F8.
+
+  Item cells — each cell contains ONE paragraph, center-aligned, with 2 runs:
+    Run 1: the STAT   — bold, Navy 1A3557, font size 32pt (sz=64 half-points)
+    Run 2: the LABEL  — italic, Teal 0D6E8A, font size 18pt (sz=36 half-points), prefixed with a space
+
+  Separator cells — each contains ONE paragraph with text "|":
+    Color: Light gray 888888, font size 24pt (sz=48), center-aligned
+
+  Row spacing: space_before=80, space_after=20 for row 1
+               space_before=20, space_after=80 for row 2
+
+  Content: exactly 2 rows × 3 items = 6 stats. Choose stats matching JD priorities.
+  Example row 1: ("19+","Years Fintech Domain") | | ("$20M","Portfolio Governed") | | ("95%+","On-time Delivery")
+  Example row 2: ("60+","Team Scaled")          | | ("92%","Client Retention")    | | ("4","Geographies Led")
+
+  NEVER build this as paragraphs. NEVER use ◆. NEVER left-align. ALWAYS use this 5-column table.
 
 CORE COMPETENCIES — 3-column borderless table:
   3 column headings derived from the JD's key requirement areas.
