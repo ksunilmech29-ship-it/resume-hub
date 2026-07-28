@@ -843,11 +843,58 @@ let boardJobs = [];
 let boardFilter = '';
 let boardSearch = '';
 
+// ── Board preferences stored in localStorage ───────────────────
+const DISMISSED_KEY = 'board_dismissed_v1';
+const FIT_KEY       = 'board_fit_v1';
+const STOP_WORDS = new Set(['and','the','of','for','in','at','a','an','to','with','head','vice',
+  'president','senior','junior','global','chief','officer','lead','principal','associate']);
+
+function getDismissed() {
+  try { return new Set(JSON.parse(localStorage.getItem(DISMISSED_KEY)||'[]')); } catch { return new Set(); }
+}
+function saveDismissed(s) { localStorage.setItem(DISMISSED_KEY, JSON.stringify([...s])); }
+function getFitSignals() {
+  try { return JSON.parse(localStorage.getItem(FIT_KEY)||'[]'); } catch { return []; }
+}
+function saveFitSignals(arr) { localStorage.setItem(FIT_KEY, JSON.stringify(arr.slice(-60))); }
+
+function extractWords(title) {
+  return (title||'').toLowerCase().split(/\W+/).filter(w => w.length > 3 && !STOP_WORDS.has(w));
+}
+
+function fitScore(job, signals) {
+  if (!signals.length) return 0;
+  const words = new Set(extractWords(job.title));
+  let score = 0;
+  for (const sig of signals) {
+    for (const w of (sig.words||[])) { if (words.has(w)) score += 2; }
+    if (sig.source && job.source && job.source.toLowerCase().includes(sig.source.toLowerCase())) score += 0.5;
+  }
+  return score;
+}
+
+function dismissJob(idx) {
+  const j = boardJobs[idx];
+  if (!j) return;
+  const key = j.job_url || (j.title + '|' + j.company);
+  const d = getDismissed();
+  d.add(key);
+  saveDismissed(d);
+  boardJobs.splice(idx, 1);
+  renderBoard();
+  toast('Removed — won\'t show again');
+}
+
 async function loadBoard() {
   document.getElementById('board-list').innerHTML = '<div class="empty">Loading…</div>';
   const d = await api('/api/jobboard');
   if (d.error && !d.jobs) { document.getElementById('board-list').innerHTML = `<div class="empty">${esc(d.error)}</div>`; return; }
-  boardJobs = d.jobs || [];
+  // Filter already-dismissed jobs
+  const dismissed = getDismissed();
+  boardJobs = (d.jobs || []).filter(j => {
+    const key = j.job_url || (j.title + '|' + j.company);
+    return !dismissed.has(key);
+  });
   const srcLabel = (d.sources||[]).join(' + ') || `${boardJobs.length} jobs`;
   document.getElementById('board-meta').textContent = `${srcLabel}${d.generated_at ? ' · ' + d.generated_at : ''}`;
   renderBoardFilter();
@@ -885,16 +932,23 @@ function renderBoard() {
     (j.company||'').toLowerCase().includes(boardSearch)
   );
   if (!filtered.length) { el.innerHTML = '<div class="empty">No jobs found.</div>'; return; }
-  el.innerHTML = filtered.slice(0, 150).map((j) => {
+
+  // Score and sort — highest fit first, then rest in original order
+  const signals = getFitSignals();
+  const scored = filtered.map((j, i) => ({ j, i, fs: fitScore(j, signals) }));
+  scored.sort((a, b) => b.fs - a.fs || a.i - b.i);
+
+  el.innerHTML = scored.slice(0, 150).map(({ j, fs }) => {
     const idx = boardJobs.indexOf(j);
     const posted = j.date_posted ? j.date_posted : '';
     const scoreHtml = j.score ? `<span style="background:#f0fdf4;color:#16a34a;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:6px">Score ${j.score}</span>` : '';
     const newBadge  = j.is_new  ? `<span style="background:#fef9c3;color:#854d0e;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:4px">New</span>` : '';
+    const fitBadge  = fs > 0    ? `<span style="background:#ede9fe;color:#5b21b6;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:4px">&#127919; Recommended</span>` : '';
     const skills = j.key_skills ? `<div style="font-size:11px;color:#666;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(j.key_skills.slice(0,120))}</div>` : '';
     return `<div class="job-card" id="bcard-${idx}">
   <div class="job-head">
     <div style="flex:1;min-width:0">
-      <div class="job-title">${esc(j.title)}${newBadge}${scoreHtml}</div>
+      <div class="job-title">${esc(j.title)}${newBadge}${scoreHtml}${fitBadge}</div>
       <div class="job-co">${esc(j.company)}${j.location ? ' · ' + esc(j.location) : ''}</div>
     </div>
     <span class="badge" style="background:#f0f4ff;color:#1a3557;flex-shrink:0">${esc(j.source||'')}</span>
@@ -904,9 +958,10 @@ function renderBoard() {
   <div style="display:flex;gap:8px;margin-top:10px">
     ${j.job_url ? `<a href="${esc(j.job_url)}" target="_blank" style="flex:1;padding:8px 0;text-align:center;border:1px solid #ddd;border-radius:7px;font-size:12px;color:#1a56db;text-decoration:none">&#128279; View</a>` : '<span style="flex:1"></span>'}
     <button onclick="addBoardJobToQueue(${idx})" id="badd-${idx}" style="flex:2;padding:8px 0;background:#111;color:#fff;border:none;border-radius:7px;font-size:12px;font-weight:500;cursor:pointer">+ Add to Queue</button>
+    <button onclick="dismissJob(${idx})" title="Not for me" style="padding:8px 10px;background:#fff;color:#999;border:1px solid #eee;border-radius:7px;font-size:14px;cursor:pointer">&#10005;</button>
   </div>
 </div>`;
-  }).join('') + (filtered.length > 150 ? `<div class="empty" style="padding:12px">Showing 150 of ${filtered.length} — use search to narrow down</div>` : '');
+  }).join('') + (scored.length > 150 ? `<div class="empty" style="padding:12px">Showing 150 of ${scored.length} — use search to narrow down</div>` : '');
 }
 
 async function addBoardJobToQueue(idx) {
@@ -923,6 +978,13 @@ async function addBoardJobToQueue(idx) {
   if (d.id) {
     if (btn) { btn.textContent = '✓ Added'; btn.style.background = '#16a34a'; }
     toast(`"${j.title}" added to queue`);
+    // Learn from this job — save fit signals
+    const words = extractWords(j.title);
+    if (words.length) {
+      const signals = getFitSignals();
+      signals.push({ words, source: j.source || '' });
+      saveFitSignals(signals);
+    }
   } else {
     if (btn) { btn.disabled = false; btn.textContent = '+ Add to Queue'; }
     toast('Error: ' + (d.error || 'unknown'), 3000);
