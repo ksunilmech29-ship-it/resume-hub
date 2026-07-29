@@ -933,10 +933,10 @@ function renderBoard() {
   );
   if (!filtered.length) { el.innerHTML = '<div class="empty">No jobs found.</div>'; return; }
 
-  // Score and sort — highest fit first, then rest in original order
+  // Score and sort — highest fit first, then latest date, then original order
   const signals = getFitSignals();
   const scored = filtered.map((j, i) => ({ j, i, fs: fitScore(j, signals) }));
-  scored.sort((a, b) => b.fs - a.fs || a.i - b.i);
+  scored.sort((a, b) => b.fs - a.fs || (b.j.date_posted||'').localeCompare(a.j.date_posted||'') || a.i - b.i);
 
   el.innerHTML = scored.slice(0, 150).map(({ j, fs }) => {
     const idx = boardJobs.indexOf(j);
