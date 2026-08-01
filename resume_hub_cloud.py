@@ -149,7 +149,14 @@ PAGE 1 FORMAT
 HEADER — 3 lines:
   Line 1 [BG F0F7FB, ALL CAPS bold Navy]: SUNIL KUMAR K
   Line 2 [BG F0F7FB, teal]:
-    [Target role title]  |  [3-5 keywords drawn directly from the JD]
+    [Safe generic senior title — NOT the verbatim job posting title. Derive from JD theme.
+     Use "Head of [Theme]" or "Vice President | [Theme]" form. Examples:
+       JD = "Account Director" → "Head of Account Management"
+       JD = "Director Customer Success" → "Head of Customer Success"
+       JD = "Associate Director Growth" → "Head of Growth"
+     Never copy the exact job posting title. Never expose level mismatches.
+     Do NOT alter any Experience designation (VP, Program Manager, AVP, etc.)]
+    |  [3-5 keywords drawn directly from the JD]
     Keywords must reflect what the JD asks for — not generic phrases.
   Line 3 [no BG, gray]:
     Bangalore, India  |  +91 9741114967  |  ksunilmech29@gmail.com  |  linkedin.com/in/sunil-kumar-k-8b1b72a
@@ -249,6 +256,7 @@ HARD RULES
 - Margins: 576 DXA top/bottom, 792 DXA left/right
 - $20M only if JD explicitly asks for P&L/revenue ownership
 - Gap check internally — do not pause to ask. Proceed to build.
+- No spurious commas: never write "X, with" or trailing commas before conjunctions/prepositions. Proofread ALL punctuation before saving.
 - Validate all rules. Must reach 10/10 before saving.
 ==========================================================================
 """
@@ -459,6 +467,25 @@ def _do_build(job_id, db_path, extra=''):
             drive_link = upload_to_drive(output_path, fname, job=job)
         except Exception as e:
             drive_error = str(e)
+
+        # Convert to PDF and upload to same Drive subfolder
+        try:
+            import shutil
+            soffice = shutil.which('soffice') or '/usr/bin/soffice'
+            if os.path.exists(soffice):
+                pdf_out = os.path.splitext(output_path)[0] + '.pdf'
+                subprocess.run(
+                    [soffice, '--headless', '--convert-to', 'pdf',
+                     '--outdir', os.path.dirname(output_path), output_path],
+                    capture_output=True, timeout=60
+                )
+                if os.path.exists(pdf_out):
+                    upload_to_drive(pdf_out, os.path.basename(pdf_out), job=job)
+                    log('PDF uploaded to Drive.')
+                    try: os.unlink(pdf_out)
+                    except Exception: pass
+        except Exception:
+            pass
 
         # Also email if configured
         gmail_user = _get_setting_direct(db_path, 'gmail_user', os.environ.get('GMAIL_USER', ''))
@@ -940,7 +967,7 @@ function renderBoard() {
 
   el.innerHTML = scored.slice(0, 150).map(({ j, fs }) => {
     const idx = boardJobs.indexOf(j);
-    const posted = j.date_posted ? j.date_posted : '';
+    const posted = (j.date_posted && j.date_posted !== 'nan') ? j.date_posted : '';
     const scoreHtml = j.score ? `<span style="background:#f0fdf4;color:#16a34a;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:6px">Score ${j.score}</span>` : '';
     const newBadge  = j.is_new  ? `<span style="background:#fef9c3;color:#854d0e;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:4px">New</span>` : '';
     const fitBadge  = fs > 0    ? `<span style="background:#ede9fe;color:#5b21b6;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:4px">&#127919; Recommended</span>` : '';
