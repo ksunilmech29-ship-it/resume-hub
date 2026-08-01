@@ -844,10 +844,15 @@ def api_jobboard():
             with open(jobs_file, encoding='utf-8') as f:
                 data = json.load(f)
             generated_at = data.get('generated_at', '')
+            scrape_date = generated_at[:10] if generated_at else ''
             added = 0
             for j in data.get('jobs', []):
                 d = _valid_date(j.get('date_posted', ''))
                 if d is None:
+                    continue
+                if not d and scrape_date >= HISTORY_CUTOFF:
+                    d = scrape_date
+                elif not d:
                     continue
                 jobs.append({
                     'title':       j.get('title', ''),
