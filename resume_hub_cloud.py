@@ -824,26 +824,37 @@ def api_import_linkedin_emails():
     return jsonify({'ok': True, 'found': len(parsed), 'inserted': inserted,
                     'skipped': len(parsed) - inserted})
 
+HISTORY_CUTOFF = '2026-08-01'
+
+def _valid_date(d):
+    if not d or str(d).lower() in ('nan', 'none', 'null', ''):
+        return ''
+    return d[:10] if d[:10] >= HISTORY_CUTOFF else None
+
 @app.route('/api/jobboard')
 def api_jobboard():
     jobs = []
     sources = []
     generated_at = ''
 
-    # Cloud: reads daily scrape only (no localhost:5000 available on Render)
+    # Cloud: reads from jobs_data.json (daily scrape + desktop sync)
     jobs_file = os.path.join(BASE, 'docs', 'jobs_data.json')
     if os.path.exists(jobs_file):
         try:
             with open(jobs_file, encoding='utf-8') as f:
                 data = json.load(f)
             generated_at = data.get('generated_at', '')
+            added = 0
             for j in data.get('jobs', []):
+                d = _valid_date(j.get('date_posted', ''))
+                if d is None:
+                    continue
                 jobs.append({
                     'title':       j.get('title', ''),
                     'company':     j.get('company', ''),
                     'location':    j.get('location', ''),
                     'source':      j.get('source', 'Daily Scrape'),
-                    'date_posted': j.get('date_posted', ''),
+                    'date_posted': d,
                     'job_url':     j.get('job_url', ''),
                     'description': j.get('description', ''),
                     'score':       '',
@@ -851,7 +862,9 @@ def api_jobboard():
                     'is_new':      1,
                     '_from':       'daily',
                 })
-            sources.append(f'Daily scrape ({len(data.get("jobs", []))} jobs)')
+                added += 1
+            if added:
+                sources.append(f'Jobs ({added})')
         except Exception:
             pass
 
@@ -1151,7 +1164,8 @@ function renderBoard() {
   // Score and sort — highest fit first, then latest date, then original order
   const signals = getFitSignals();
   const scored = filtered.map((j, i) => ({ j, i, fs: fitScore(j, signals) }));
-  scored.sort((a, b) => b.fs - a.fs || (b.j.date_posted||'').localeCompare(a.j.date_posted||'') || a.i - b.i);
+  const dateKey = j => (j.date_posted && j.date_posted !== 'nan' && j.date_posted !== '') ? j.date_posted : '0000-00-00';
+  scored.sort((a, b) => b.fs - a.fs || dateKey(b.j).localeCompare(dateKey(a.j)) || a.i - b.i);
 
   el.innerHTML = scored.slice(0, 150).map(({ j, fs }) => {
     const idx = boardJobs.indexOf(j);
