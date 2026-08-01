@@ -1135,15 +1135,17 @@ async function loadBoard() {
 }
 
 function renderBoardFilter() {
-  const sources = [...new Set(boardJobs.map(j => j.source).filter(Boolean))];
   const el = document.getElementById('board-filter');
   const chip = (val, label, active) =>
     `<button onclick="setBoardFilter('${val}')" style="padding:5px 12px;border-radius:20px;border:1px solid ${active?'#1a3557':'#ddd'};background:${active?'#1a3557':'#fff'};color:${active?'#fff':'#444'};font-size:12px;cursor:pointer">${label}</button>`;
+  const hasLinkedIn = boardJobs.some(j => (j.source||'').toLowerCase().includes('linkedin'));
+  const hasIndeed   = boardJobs.some(j => (j.source||'').toLowerCase().includes('indeed'));
   el.innerHTML =
     `<input type="text" placeholder="Search title / company…" oninput="setBoardSearch(this.value)"
       style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;margin-bottom:8px;font-family:inherit"/>` +
     chip('', 'All', boardFilter==='') +
-    sources.map(s => chip(s, s, boardFilter===s)).join('');
+    chip('linkedin', '🔵 LinkedIn', boardFilter==='linkedin') +
+    (hasIndeed ? chip('indeed', 'Indeed', boardFilter==='indeed') : '');
 }
 
 function setBoardFilter(src) {
@@ -1159,7 +1161,9 @@ function setBoardSearch(val) {
 
 function renderBoard() {
   const el = document.getElementById('board-list');
-  let filtered = boardFilter ? boardJobs.filter(j => j.source === boardFilter) : boardJobs;
+  let filtered = boardFilter
+    ? boardJobs.filter(j => (j.source||'').toLowerCase().includes(boardFilter))
+    : boardJobs;
   if (boardSearch) filtered = filtered.filter(j =>
     (j.title||'').toLowerCase().includes(boardSearch) ||
     (j.company||'').toLowerCase().includes(boardSearch)
