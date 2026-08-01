@@ -40,6 +40,18 @@ CREATE TABLE IF NOT EXISTS settings (
     key   TEXT PRIMARY KEY,
     value TEXT
 );
+CREATE TABLE IF NOT EXISTS board_jobs (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    title       TEXT NOT NULL,
+    company     TEXT DEFAULT '',
+    location    TEXT DEFAULT '',
+    job_url     TEXT DEFAULT '',
+    date_posted TEXT DEFAULT '',
+    source      TEXT DEFAULT 'LinkedIn Alert',
+    description TEXT DEFAULT '',
+    dedup_key   TEXT UNIQUE,
+    imported_at TEXT DEFAULT (datetime('now','localtime'))
+);
 """
 
 def get_db():
@@ -676,6 +688,142 @@ def api_settings_save():
         set_setting('gmail_pass', d['gmail_pass'].strip())
     return jsonify({'ok': True})
 
+def _dedup_key(title, company, url=''):
+    if url:
+        m = re.search(r'/jobs/view/(\d+)', url)
+        if m:
+            return f'li_{m.group(1)}'
+    slug = re.sub(r'[^a-z0-9]', '', (title + company).lower())
+    return f'tc_{slug[:60]}'
+
+def _get_setting_cloud(key, default=''):
+    try:
+        row = get_db().execute('SELECT value FROM settings WHERE key=?', (key,)).fetchone()
+        return row[0] if row else os.environ.get(key.upper(), default)
+    except Exception:
+        return default
+
+def parse_linkedin_alert_emails(gmail_user, gmail_pass, days=7):
+    import imaplib, email as _email
+    from datetime import timedelta
+
+    jobs = []
+    seen_keys = set()
+
+    conn = imaplib.IMAP4_SSL('imap.gmail.com', 993)
+    conn.login(gmail_user, gmail_pass)
+    conn.select('INBOX')
+
+    since = (datetime.now() - timedelta(days=days)).strftime('%d-%b-%Y')
+    _, msg_ids = conn.search(None,
+        f'(FROM "jobalerts-noreply@linkedin.com" SINCE {since})')
+    ids = msg_ids[0].split()
+
+    for mid in ids:
+        _, data = conn.fetch(mid, '(RFC822)')
+        msg = _email.message_from_bytes(data[0][1])
+
+        html_body = ''
+        if msg.is_multipart():
+            for part in msg.walk():
+                if part.get_content_type() == 'text/html':
+                    html_body = part.get_payload(decode=True).decode('utf-8', errors='ignore')
+                    break
+        elif msg.get_content_type() == 'text/html':
+            html_body = msg.get_payload(decode=True).decode('utf-8', errors='ignore')
+
+        if not html_body:
+            continue
+
+        job_blocks = re.findall(
+            r'href="(https://www\.linkedin\.com/comm/jobs/view/\d+[^"]*)"[^>]*>(.*?)</a>'
+            r'.*?<span[^>]*>(.*?)</span>'
+            r'(?:.*?<span[^>]*>(.*?)</span>)?',
+            html_body, re.DOTALL | re.IGNORECASE
+        )
+
+        if not job_blocks:
+            job_blocks_simple = re.findall(
+                r'href="(https://www\.linkedin\.com/(?:comm/)?jobs/view/\d+[^"]*)"[^>]*>(.*?)</a>',
+                html_body, re.DOTALL | re.IGNORECASE
+            )
+            for url, title_html in job_blocks_simple:
+                title = re.sub(r'<[^>]+>', '', title_html).strip()
+                if not title or len(title) < 4:
+                    continue
+                url_clean = url.split('?')[0]
+                key = _dedup_key(title, '', url_clean)
+                if key in seen_keys:
+                    continue
+                seen_keys.add(key)
+                jobs.append({'title': title, 'company': '', 'location': '',
+                             'job_url': url_clean, 'date_posted': '', 'dedup_key': key})
+        else:
+            for url, title_html, co_html, loc_html in job_blocks:
+                title    = re.sub(r'<[^>]+>', '', title_html).strip()
+                company  = re.sub(r'<[^>]+>', '', co_html).strip()
+                location = re.sub(r'<[^>]+>', '', (loc_html or '')).strip()
+                if not title or len(title) < 4:
+                    continue
+                url_clean = url.split('?')[0]
+                key = _dedup_key(title, company, url_clean)
+                if key in seen_keys:
+                    continue
+                seen_keys.add(key)
+                jobs.append({'title': title, 'company': company, 'location': location,
+                             'job_url': url_clean, 'date_posted': '', 'dedup_key': key})
+
+    conn.logout()
+    return jobs
+
+@app.route('/api/import-linkedin-emails', methods=['POST'])
+def api_import_linkedin_emails():
+    gmail_user = _get_setting_cloud('gmail_user', DEFAULT_TO)
+    gmail_pass = _get_setting_cloud('gmail_pass', os.environ.get('GMAIL_PASS', ''))
+    if not gmail_pass:
+        return jsonify({'error': 'Gmail app password not set in Settings'}), 400
+
+    days = int(request.json.get('days', 7)) if request.json else 7
+    try:
+        parsed = parse_linkedin_alert_emails(gmail_user, gmail_pass, days=days)
+    except Exception as e:
+        return jsonify({'error': f'Email fetch failed: {e}'}), 500
+
+    db = get_db()
+    existing_keys = set(
+        r[0] for r in db.execute('SELECT dedup_key FROM board_jobs').fetchall()
+    )
+    jobs_file = os.path.join(BASE, 'docs', 'jobs_data.json')
+    if os.path.exists(jobs_file):
+        try:
+            with open(jobs_file, encoding='utf-8') as f:
+                daily = json.load(f).get('jobs', [])
+            for j in daily:
+                existing_keys.add(_dedup_key(j.get('title',''), j.get('company',''), j.get('job_url','')))
+        except Exception:
+            pass
+
+    inserted = 0
+    for j in parsed:
+        key = j.get('dedup_key') or _dedup_key(j['title'], j.get('company',''), j.get('job_url',''))
+        if key in existing_keys:
+            continue
+        try:
+            db.execute(
+                'INSERT INTO board_jobs (title, company, location, job_url, date_posted, source, dedup_key) '
+                'VALUES (?,?,?,?,?,?,?)',
+                (j['title'], j.get('company',''), j.get('location',''),
+                 j.get('job_url',''), j.get('date_posted',''), 'LinkedIn Alert', key)
+            )
+            existing_keys.add(key)
+            inserted += 1
+        except sqlite3.IntegrityError:
+            pass
+    db.commit()
+
+    return jsonify({'ok': True, 'found': len(parsed), 'inserted': inserted,
+                    'skipped': len(parsed) - inserted})
+
 @app.route('/api/jobboard')
 def api_jobboard():
     jobs = []
@@ -706,6 +854,42 @@ def api_jobboard():
             sources.append(f'Daily scrape ({len(data.get("jobs", []))} jobs)')
         except Exception:
             pass
+
+    # Source 2: board_jobs table — LinkedIn alert email imports
+    try:
+        db = get_db()
+        db.execute('''CREATE TABLE IF NOT EXISTS board_jobs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT NOT NULL,
+            company TEXT DEFAULT '', location TEXT DEFAULT '',
+            job_url TEXT DEFAULT '', date_posted TEXT DEFAULT '',
+            source TEXT DEFAULT 'LinkedIn Alert', description TEXT DEFAULT '',
+            dedup_key TEXT UNIQUE,
+            imported_at TEXT DEFAULT (datetime('now','localtime')))''')
+        alert_jobs = db.execute(
+            'SELECT title, company, location, job_url, date_posted, source, imported_at '
+            'FROM board_jobs ORDER BY imported_at DESC'
+        ).fetchall()
+        loaded_keys = set(
+            _dedup_key(j['title'], j.get('company',''), j.get('job_url','')) for j in jobs
+        )
+        added = 0
+        for r in alert_jobs:
+            key = _dedup_key(r[0], r[1], r[3])
+            if key in loaded_keys:
+                continue
+            loaded_keys.add(key)
+            jobs.append({
+                'title': r[0], 'company': r[1], 'location': r[2],
+                'job_url': r[3], 'date_posted': r[4],
+                'source': r[5] or 'LinkedIn Alert',
+                'description': '', 'score': '', 'key_skills': '', 'is_new': 1,
+                '_from': 'email_alert',
+            })
+            added += 1
+        if added:
+            sources.append(f'LinkedIn Alerts ({added} jobs)')
+    except Exception:
+        pass
 
     return jsonify({'jobs': jobs, 'total': len(jobs), 'sources': sources, 'generated_at': generated_at})
 
@@ -802,10 +986,14 @@ textarea{height:120px;resize:vertical}
 </div>
 
 <div class="pane" id="pane-board">
-  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
     <span style="font-size:12px;color:#999" id="board-meta">Loading…</span>
-    <button onclick="loadBoard()" style="padding:6px 14px;border:1px solid #ddd;border-radius:8px;background:#fff;font-size:12px;cursor:pointer">&#8635; Refresh</button>
+    <div style="display:flex;gap:6px">
+      <button onclick="importLinkedInAlerts()" id="btn-import-li" style="padding:6px 12px;border:1px solid #0a66c2;border-radius:8px;background:#fff;color:#0a66c2;font-size:12px;font-weight:500;cursor:pointer">&#128231; LinkedIn Alerts</button>
+      <button onclick="loadBoard()" style="padding:6px 12px;border:1px solid #ddd;border-radius:8px;background:#fff;font-size:12px;cursor:pointer">&#8635; Refresh</button>
+    </div>
   </div>
+  <div id="import-li-status" style="display:none;font-size:12px;color:#555;margin-bottom:10px;padding:8px 12px;background:#f0f7ff;border-radius:8px;border:1px solid #cce0ff"></div>
   <div id="board-filter" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>
   <div id="board-list"><div class="empty">Loading jobs…</div></div>
 </div>
@@ -1016,6 +1204,30 @@ async function addBoardJobToQueue(idx) {
     if (btn) { btn.disabled = false; btn.textContent = '+ Add to Queue'; }
     toast('Error: ' + (d.error || 'unknown'), 3000);
   }
+}
+
+async function importLinkedInAlerts() {
+  const btn = document.getElementById('btn-import-li');
+  const status = document.getElementById('import-li-status');
+  btn.disabled = true;
+  btn.textContent = 'Importing…';
+  status.style.display = 'none';
+  try {
+    const r = await api('/api/import-linkedin-emails', 'POST', { days: 7 });
+    if (r.error) {
+      status.textContent = 'Error: ' + r.error;
+      status.style.display = 'block';
+    } else {
+      status.textContent = `LinkedIn Alerts: ${r.found} found, ${r.inserted} new jobs added, ${r.skipped} duplicates skipped.`;
+      status.style.display = 'block';
+      if (r.inserted > 0) loadBoard();
+    }
+  } catch(e) {
+    status.textContent = 'Import failed: ' + e;
+    status.style.display = 'block';
+  }
+  btn.disabled = false;
+  btn.textContent = '✉ LinkedIn Alerts';
 }
 
 function toast(msg, ms=2500) {
