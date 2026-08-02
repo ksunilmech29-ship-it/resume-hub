@@ -256,7 +256,54 @@ Keep executing steps until page 2 is full. Do not stop at STEP 1 if it is not en
 Page 2 must NEVER overflow to a third page.
 
 ==========================================================================
-HARD RULES
+HARD RULES — THESE ARE NON-NEGOTIABLE. VIOLATION = AUTOMATIC FAIL.
+==========================================================================
+NAME (HARDEST RULE):
+  The name paragraph MUST read exactly: SUNIL KUMAR K
+  All three words. The K is mandatory. Never "Sunil Kumar". Never "SUNIL KUMAR".
+  In your XML: <w:t>SUNIL KUMAR K</w:t>   NOT <w:t>SUNIL KUMAR</w:t>
+  Check this before saving. If it says SUNIL KUMAR without K, FIX IT before proceeding.
+
+ATTRA TITLE (HARD RULE):
+  Attra job title MUST be exactly: Program Manager
+  NEVER write "Program Director" for Attra. Not in the experience header. Not anywhere.
+  The experience line must read: Attra   Program Manager   May 2018 - Mar 2022
+
+ACCENTURE DESCRIPTION (VERBATIM — COPY EXACTLY):
+  "Started as a QA Engineer and progressively contributed to product and delivery, built user stories, supported product definition and process standardization across Banking, Insurance and Healthcare domain."
+  Copy character-for-character. No paraphrasing.
+
+CAREER HIGHLIGHTS (HARD RULE — MUST BE 5-COLUMN TABLE):
+  NEVER write Career Highlights as paragraphs with symbols like ◆ or •.
+  ALWAYS build a 5-column borderless w:tbl with col widths 3300|378|3300|378|3300 DXA.
+  2 rows, 3 items per row = 6 stat+label cells.
+  Item cells: stat bold Navy 14pt + label italic Teal 10pt. Separator cells: "|" gray 11pt.
+  If you find yourself writing "19+ Years ◆ 30% Faster" as a paragraph, STOP. Build the table.
+
+PAGE 2 FILL (HARD RULE):
+  Page 2 MUST be filled to within 2 lines of the bottom. Count your lines.
+  Standard page 2 = 55-60 lines. If below 53 lines, ADD MORE CONTENT — do not stop early.
+  Add sections "STAKEHOLDER ENGAGEMENT AND CROSS-FUNCTIONAL LEADERSHIP" and
+  "DELIVERY EXCELLENCE AND OPERATIONAL GOVERNANCE" with 2 bullets each if needed.
+  Keep adding until page 2 is full.
+
+OTHER HARD RULES:
+- 2 pages, both fully filled
+- No em dashes, no semicolons anywhere in the document
+- No tables except Core Competencies 3-column table and Career Highlights 5-column table
+- No certifications beyond the canonical 4
+- Colors: Navy 1A3557, Teal 0D6E8A, BG F0F7FB/E3F2F8/F5FAFD/EBF4FF
+- Margins: 576 DXA top/bottom, 792 DXA left/right
+- $20M only if JD explicitly asks for P&L or revenue ownership
+
+FINAL VALIDATION CHECKLIST — run through this before saving the file:
+  [1] Name paragraph reads exactly: SUNIL KUMAR K (three words, K present)
+  [2] Attra title reads: Program Manager (NOT Program Director)
+  [3] Accenture text starts with: "Started as a QA Engineer..."
+  [4] Career Highlights is a 5-column borderless w:tbl (NOT paragraphs with ◆)
+  [5] Page 2 is full, within 2 lines of the bottom
+  [6] No em dashes, no semicolons in any paragraph
+  [7] All 4 canonical certifications present on page 1
 ==========================================================================
 - Name line 1: SUNIL KUMAR K (all 3 words, ALL CAPS) â€” missing K = fail
 - 2 pages, both fully filled
@@ -338,6 +385,7 @@ def upload_to_drive(file_path, filename, job=None):
         fileId=f['id'],
         body={'role': 'reader', 'type': 'anyone'}
     ).execute()
+    download_url = f'https://drive.google.com/uc?export=download&id={f["id"]}'
 
     # Upload job_info.txt with full job details including URL
     if job and target_folder_id:
@@ -364,7 +412,7 @@ def upload_to_drive(file_path, filename, job=None):
             body={'role': 'reader', 'type': 'anyone'}
         ).execute()
 
-    return f.get('webViewLink', '')
+    return f.get('webViewLink', ''), download_url
 
 # â”€â”€ Resume builder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
@@ -499,9 +547,10 @@ def _do_build(job_id, db_path, extra=''):
         # Upload to Google Drive
         log('Uploading to Google Drive...')
         drive_link = ''
+        download_url = ''
         drive_error = ''
         try:
-            drive_link = upload_to_drive(output_path, fname, job=job)
+            drive_link, download_url = upload_to_drive(output_path, fname, job=job)
         except Exception as e:
             drive_error = str(e)
 
@@ -545,6 +594,8 @@ def _do_build(job_id, db_path, extra=''):
         parts = []
         if drive_link:
             parts.append(f'Saved to Google Drive: {drive_link}')
+        if download_url:
+            parts.append(f'Download: {download_url}')
         elif drive_error:
             parts.append(f'Drive upload failed: {drive_error}')
         else:
