@@ -440,18 +440,43 @@ def _do_build(job_id, db_path, extra=''):
         if not api_key:
             raise ValueError('ANTHROPIC_API_KEY not set in Render environment variables.')
 
-        log('Calling Claude API to generate resume...')
         import anthropic
-        client   = anthropic.Anthropic(api_key=api_key)
-        response = client.messages.create(
-            model='claude-sonnet-4-6',
-            max_tokens=8192,
-            messages=[{'role': 'user', 'content': build_prompt(job, output_path, extra)}]
-        )
+        import ast
+        client = anthropic.Anthropic(api_key=api_key)
 
-        script = _extract_script(response.content[0].text)
+        script = None
+        last_error = ''
+        for attempt in range(1, 4):
+            log(f'Calling Claude API to generate resume (attempt {attempt}/3)...')
+            messages = [{'role': 'user', 'content': build_prompt(job, output_path, extra)}]
+            if last_error:
+                messages.append({'role': 'assistant', 'content': '```python\n' + (script or '') + '\n```'})
+                messages.append({'role': 'user', 'content': f'That script had an error:\n{last_error}\n\nFix it and return the complete corrected Python script inside ```python ... ```.'})
+
+            response = client.messages.create(
+                model='claude-sonnet-4-6',
+                max_tokens=8192,
+                messages=messages
+            )
+            candidate = _extract_script(response.content[0].text)
+            if not candidate:
+                last_error = 'No Python script found in response.'
+                continue
+            try:
+                ast.parse(candidate)
+                script = candidate
+                break
+            except SyntaxError as e:
+                last_error = f'SyntaxError: {e}'
+                script = candidate
+
         if not script:
-            raise ValueError('Claude did not return a Python script.\n\n' + response.content[0].text[:600])
+            raise ValueError(f'Claude failed to produce a valid script after 3 attempts. Last error: {last_error}')
+
+        try:
+            ast.parse(script)
+        except SyntaxError as e:
+            raise ValueError(f'Generated script has a syntax error after retries: {e}\n\nScript excerpt:\n{script[:500]}')
 
         log('Building resume...')
         with tempfile.NamedTemporaryFile(suffix='.py', mode='w', delete=False, encoding='utf-8') as f:
