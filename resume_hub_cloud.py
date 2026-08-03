@@ -18,6 +18,100 @@ TEMPLATE   = os.path.join(BASE, 'master_template.docx')
 TMP_DIR    = tempfile.gettempdir()
 DEFAULT_TO = 'ksunilmech29@gmail.com'
 
+
+# ── GitHub DB Persistence (survives Render redeploys) ─────────────────────
+GITHUB_REPO     = 'ksunilmech29-ship-it/resume-hub'
+BACKUP_FILE     = 'docs/cloud_jobs_backup.json'
+GITHUB_RAW_URL  = f'https://raw.githubusercontent.com/{GITHUB_REPO}/main/{BACKUP_FILE}'
+GITHUB_API_URL  = f'https://api.github.com/repos/{GITHUB_REPO}/contents/{BACKUP_FILE}'
+_gh_lock        = threading.Lock()
+
+def _gh_token():
+    token = os.environ.get('RESUME_HUB_TOKEN', '')
+    if not token:
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            row = conn.execute("SELECT value FROM settings WHERE key='resume_hub_token'").fetchone()
+            if row: token = row[0]
+            conn.close()
+        except Exception:
+            pass
+    return token
+
+def restore_jobs_from_github():
+    """Restore jobs from GitHub backup if local DB is empty."""
+    import urllib.request as _ur
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        count = conn.execute('SELECT COUNT(*) FROM jobs').fetchone()[0]
+        conn.close()
+        if count > 0:
+            return  # DB already has data
+    except Exception:
+        return
+
+    try:
+        with _ur.urlopen(GITHUB_RAW_URL, timeout=10) as resp:
+            data = json.loads(resp.read())
+        jobs = data.get('jobs', [])
+        if not jobs:
+            return
+        conn = sqlite3.connect(DB_PATH)
+        for job in jobs:
+            conn.execute(
+                'INSERT OR IGNORE INTO jobs (id,title,company,url,jd_text,status,build_log,drive_link,created_at,built_at) VALUES (?,?,?,?,?,?,?,?,?,?)',
+                (job.get('id'), job.get('title',''), job.get('company',''), job.get('url',''),
+                 job.get('jd_text',''), job.get('status','pending'), job.get('build_log',''),
+                 job.get('drive_link',''), job.get('created_at',''), job.get('built_at',''))
+            )
+        conn.commit()
+        conn.close()
+        print(f'[persistence] Restored {len(jobs)} jobs from GitHub backup')
+    except Exception as e:
+        print(f'[persistence] Restore failed: {e}')
+
+def backup_jobs_to_github():
+    """Push current jobs to GitHub so they survive redeploys."""
+    token = _gh_token()
+    if not token:
+        return
+    import urllib.request as _ur
+    with _gh_lock:
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            conn.row_factory = sqlite3.Row
+            jobs = [dict(r) for r in conn.execute('SELECT * FROM jobs ORDER BY id').fetchall()]
+            conn.close()
+
+            payload = json.dumps({'jobs': jobs, 'backed_up_at': datetime.now().isoformat()}, ensure_ascii=False)
+            content_b64 = base64.b64encode(payload.encode('utf-8')).decode()
+
+            # Get current file SHA (needed for update)
+            sha = ''
+            try:
+                req = _ur.Request(GITHUB_API_URL,
+                    headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'})
+                with _ur.urlopen(req, timeout=8) as resp:
+                    sha = json.loads(resp.read()).get('sha', '')
+            except Exception:
+                pass
+
+            body = {'message': f'backup: {len(jobs)} jobs', 'content': content_b64, 'branch': 'main'}
+            if sha:
+                body['sha'] = sha
+
+            data = json.dumps(body).encode()
+            req = _ur.Request(GITHUB_API_URL, data=data, method='PUT',
+                headers={'Authorization': f'token {token}',
+                         'Content-Type': 'application/json',
+                         'Accept': 'application/vnd.github.v3+json'})
+            _ur.urlopen(req, timeout=15)
+        except Exception as e:
+            print(f'[persistence] Backup failed: {e}')
+
+def _backup_async():
+    threading.Thread(target=backup_jobs_to_github, daemon=True).start()
+
 app = Flask(__name__)
 
 # â”€â”€ Database â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -72,7 +166,8 @@ def init_db():
     conn.commit()
     conn.close()
 
-init_db()  # runs at import time â€” works with both gunicorn and direct python
+init_db()  # runs at import time
+restore_jobs_from_github()  # restore from GitHub if DB was wiped â€” works with both gunicorn and direct python
 
 def get_setting(key, default=''):
     row = get_db().execute('SELECT value FROM settings WHERE key=?', (key,)).fetchone()
@@ -591,6 +686,7 @@ def _do_build(job_id, db_path, extra=''):
             pass
 
         status  = 'done'
+        _backup_async()  # persist to GitHub
         parts = []
         if drive_link:
             parts.append(f'Saved to Google Drive: {drive_link}')
@@ -615,6 +711,7 @@ def _do_build(job_id, db_path, extra=''):
             (job_id,)
         )
     except Exception as e:
+        _backup_async()  # persist error state
         conn.execute(
             "UPDATE jobs SET status='error', build_log=? WHERE id=?",
             (str(e)[:2000], job_id)
@@ -668,6 +765,7 @@ def api_add():
     cur = db.execute('INSERT INTO jobs(title,company,url,jd_text) VALUES(?,?,?,?)',
                      (title, company, d.get('url', ''), d.get('jd', '')))
     db.commit()
+    _backup_async()
     row = db.execute('SELECT * FROM jobs WHERE id=?', (cur.lastrowid,)).fetchone()
     return jsonify(dict(row)), 201
 
