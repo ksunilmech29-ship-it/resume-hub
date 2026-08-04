@@ -1,5 +1,5 @@
 ﻿"""
-Resume Hub Cloud â€” Mobile job queue + AI resume builder + Google Drive save
+Resume Hub Cloud — Mobile job queue + AI resume builder + Google Drive save
 Deploy to Render.com.
 Required env vars: ANTHROPIC_API_KEY, GOOGLE_CREDENTIALS_JSON (base64), GOOGLE_DRIVE_FOLDER_ID
 Optional env vars: GMAIL_USER, GMAIL_PASS (to also email the resume)
@@ -116,7 +116,7 @@ def _backup_async():
 
 app = Flask(__name__)
 
-# â”€â”€ Database â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Database ──────────────────────────────────────────────────────────────────
 # Init runs at import time so Gunicorn workers have the schema ready
 
 SCHEMA = """
@@ -169,7 +169,7 @@ def init_db():
     conn.close()
 
 init_db()  # runs at import time
-restore_jobs_from_github()  # restore from GitHub if DB was wiped â€” works with both gunicorn and direct python
+restore_jobs_from_github()  # restore from GitHub if DB was wiped — works with both gunicorn and direct python
 
 def get_setting(key, default=''):
     row = get_db().execute('SELECT value FROM settings WHERE key=?', (key,)).fetchone()
@@ -185,32 +185,32 @@ def _get_setting_direct(db_path, key, default=''):
     conn.close()
     return row[0] if row else default
 
-# â”€â”€ Candidate profile â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Candidate profile ─────────────────────────────────────────────────────────
 
 PROFILE = """
 ==========================================================================
 GOLD STANDARD REFERENCE: REFERENCE_FORMAT_RESUME.docx (same folder)
-Match its format EXACTLY â€” especially these 3 elements:
+Match its format EXACTLY — especially these 3 elements:
   1. Career Highlights: 5-column borderless table, pipes aligned, 32pt stats
   2. Education: always on page 1 after Experience
   3. Page 2: filled to within 2 lines of bottom, no empty space
 ==========================================================================
 
 ==========================================================================
-STEP 1 â€” READ THE JD FIRST. BEFORE WRITING ANYTHING:
+STEP 1 — READ THE JD FIRST. BEFORE WRITING ANYTHING:
 Extract from the JD: the core role theme, key responsibilities, required
-skills, and priority keywords. Every section of this resume â€” header
+skills, and priority keywords. Every section of this resume — header
 keywords, summary, competency headings, experience descriptions, and KA
-section headings â€” must reflect those JD themes. The resume reader must
+section headings — must reflect those JD themes. The resume reader must
 immediately see that Sunil matches what the JD asks for.
 ==========================================================================
 
-NAME: SUNIL KUMAR K  (three words, K is mandatory â€” never drop it)
+NAME: SUNIL KUMAR K  (three words, K is mandatory — never drop it)
 Contact: +91 9741114967 | ksunilmech29@gmail.com | linkedin.com/in/sunil-kumar-k-8b1b72a
 Experience: 19+ years, Fintech and Financial Services domain
 
 ==========================================================================
-MASTER TEMPLATE â€” STRUCTURE ONLY, NEVER COPY ITS TEXT
+MASTER TEMPLATE — STRUCTURE ONLY, NEVER COPY ITS TEXT
 ==========================================================================
 The template is a Delivery Leader resume. Use it ONLY for XML structure,
 fonts, colors, spacing, table layout, and background colors.
@@ -224,7 +224,7 @@ Title and Company in this request = the job Sunil is APPLYING FOR.
 Never add the target company to the Experience section.
 
 ==========================================================================
-CAREER HISTORY â€” exactly these 4, most recent first
+CAREER HISTORY — exactly these 4, most recent first
 ==========================================================================
 1. Open Financial Technologies | Vice President | Apr 2022 - Present
    Fintech platform company. Adapt title and 2-sentence description to JD.
@@ -242,7 +242,7 @@ CAREER HISTORY â€” exactly these 4, most recent first
    standardization across Banking, Insurance and Healthcare domain."
 
 ==========================================================================
-EDUCATION AND CERTIFICATIONS â€” exactly these 4, verbatim, always Page 1
+EDUCATION AND CERTIFICATIONS — exactly these 4, verbatim, always Page 1
 ==========================================================================
 1. Executive Global Management Programme  -  IIM Calcutta  |  2014 - 2016
 2. Bachelor of Engineering  -  Visvesvaraya Technological University  |  2002 - 2006
@@ -255,56 +255,56 @@ Domain: always Fintech and Financial Services.
 ==========================================================================
 PAGE 1 FORMAT
 ==========================================================================
-HEADER â€” 3 lines:
+HEADER — 3 lines:
   Line 1 [BG F0F7FB, ALL CAPS bold Navy]: SUNIL KUMAR K
   Line 2 [BG F0F7FB, teal]:
-    [Safe generic senior title â€” NOT the verbatim job posting title. Derive from JD theme.
+    [Safe generic senior title — NOT the verbatim job posting title. Derive from JD theme.
      Use "Head of [Theme]" or "Vice President | [Theme]" form. Examples:
-       JD = "Account Director" â†’ "Head of Account Management"
-       JD = "Director Customer Success" â†’ "Head of Customer Success"
-       JD = "Associate Director Growth" â†’ "Head of Growth"
+       JD = "Account Director" → "Head of Account Management"
+       JD = "Director Customer Success" → "Head of Customer Success"
+       JD = "Associate Director Growth" → "Head of Growth"
      Never copy the exact job posting title. Never expose level mismatches.
      Do NOT alter any Experience designation (VP, Program Manager, AVP, etc.)]
     |  [3-5 keywords drawn directly from the JD]
-    Keywords must reflect what the JD asks for â€” not generic phrases.
+    Keywords must reflect what the JD asks for — not generic phrases.
   Line 3 [no BG, gray]:
     Bangalore, India  |  +91 9741114967  |  ksunilmech29@gmail.com  |  linkedin.com/in/sunil-kumar-k-8b1b72a
 
-PROFESSIONAL SUMMARY â€” 2 paragraphs, min 6 lines:
+PROFESSIONAL SUMMARY — 2 paragraphs, min 6 lines:
   Every sentence must address what the JD asks for.
   Para 1: positioning + domain + years + leadership angle matching JD.
   Para 2: quantified outcomes relevant to the JD requirements.
   No em dashes, no semicolons.
 
-CAREER HIGHLIGHTS â€” BUILD AS A 5-COLUMN BORDERLESS TABLE (not paragraphs):
-  Structure: [item] [sep] [item] [sep] [item]  â€” 2 table rows, BG E3F2F8 throughout
+CAREER HIGHLIGHTS — BUILD AS A 5-COLUMN BORDERLESS TABLE (not paragraphs):
+  Structure: [item] [sep] [item] [sep] [item]  — 2 table rows, BG E3F2F8 throughout
   Column widths (DXA): 3300 | 378 | 3300 | 378 | 3300  (total = 10656)
   All borders: none. All cells: center-aligned. Table shading: E3F2F8.
 
-  Item cells â€” each cell contains ONE paragraph, center-aligned, with 2 runs:
-    Run 1: STAT   â€” bold, Navy 1A3557, font size 14pt (sz=28 half-points)
-    Run 2: LABEL  â€” italic, Teal 0D6E8A, font size 10pt (sz=20 half-points), space-prefixed
-    LABEL must be MAX 2 WORDS â€” never 3. Stat+label combined must stay under 20 chars.
+  Item cells — each cell contains ONE paragraph, center-aligned, with 2 runs:
+    Run 1: STAT   — bold, Navy 1A3557, font size 14pt (sz=28 half-points)
+    Run 2: LABEL  — italic, Teal 0D6E8A, font size 10pt (sz=20 half-points), space-prefixed
+    LABEL must be MAX 2 WORDS — never 3. Stat+label combined must stay under 20 chars.
 
-  Separator cells â€” ONE paragraph, text "|":
+  Separator cells — ONE paragraph, text "|":
     Color: Light gray 888888, font size 11pt (sz=22), center-aligned
 
   Row spacing: space_before=80, space_after=20 for row 1
                space_before=20, space_after=80 for row 2
 
   Content: 2 rows x 3 items = 6 stats chosen to match JD priorities.
-  NEVER use paragraphs. NEVER use â—†. NEVER left-align. ALWAYS use this 5-column table.
+  NEVER use paragraphs. NEVER use ◆. NEVER left-align. ALWAYS use this 5-column table.
 
-CORE COMPETENCIES â€” 3-column borderless table:
+CORE COMPETENCIES — 3-column borderless table:
   3 column headings derived from the JD's key requirement areas.
   Each column: 1 bold teal heading + up to 5 dash-prefixed bullets (3-5 words).
 
-PROFESSIONAL EXPERIENCE â€” 4 roles, company line [BG F5FAFD]:
+PROFESSIONAL EXPERIENCE — 4 roles, company line [BG F5FAFD]:
   Each 2-sentence description must emphasise the angle the JD cares about.
   Domain label in description must match the JD context.
   Max 2 sentences per role. Accenture always verbatim.
 
-PAGE 1 MUST CONTAIN â€” in this exact order, all fitting within page 1:
+PAGE 1 MUST CONTAIN — in this exact order, all fitting within page 1:
   1. Header (Name + Role + Contact)
   2. Professional Summary (2 paragraphs)
   3. Career Highlights (2 rows)
@@ -312,7 +312,7 @@ PAGE 1 MUST CONTAIN â€” in this exact order, all fitting within page 1:
   5. Professional Experience (4 roles, 2 sentences each)
   6. Education and Certifications (all 4 entries)
 
-EDUCATION MUST ALWAYS BE ON PAGE 1 â€” THIS IS A HARD RULE.
+EDUCATION MUST ALWAYS BE ON PAGE 1 — THIS IS A HARD RULE.
 If page 1 is overflowing:
   - Cut Summary to 2 very tight sentences per paragraph (4 lines total)
   - Cut each Experience description to 1-2 lines maximum
@@ -324,7 +324,7 @@ PAGE 2 FORMAT
 ==========================================================================
 Page break before Key Achievements. Page 2 = Key Achievements ONLY.
 
-KEY ACHIEVEMENTS â€” section headings [BG EBF4FF, Navy ALL CAPS]:
+KEY ACHIEVEMENTS — section headings [BG EBF4FF, Navy ALL CAPS]:
   Headings must come from the JD's key themes and requirements.
   Order: most JD-relevant sections first.
 
@@ -334,15 +334,15 @@ Each bullet:
   Owned/Championed/Developed/Governed/Delivered/Managed/Scaled/Directed).
   Never repeat same verb more than twice. Include metrics in every bullet.
 
-PAGE 2 FILL RULE â€” MANDATORY, NO EXCEPTIONS:
+PAGE 2 FILL RULE — MANDATORY, NO EXCEPTIONS:
 Page 2 MUST be filled to within 2 lines of the bottom edge.
 A page 2 with empty space at the bottom = AUTOMATIC FAIL.
 
 COUNTING RULE: A standard page 2 holds approximately 55-60 lines of body text.
 After writing your bullets, count the lines used. If below 53 lines, ADD MORE CONTENT.
 
-ACTION SEQUENCE â€” execute in order until page 2 is full:
-  STEP 1: Extend the last 2-3 bullets â€” add one extra sentence to each (~80 chars).
+ACTION SEQUENCE — execute in order until page 2 is full:
+  STEP 1: Extend the last 2-3 bullets — add one extra sentence to each (~80 chars).
   STEP 2: If still not full, add a new bullet to the last section.
   STEP 3: If still not full, add a new section "STAKEHOLDER ENGAGEMENT AND
            CROSS-FUNCTIONAL LEADERSHIP" with 2 fully written bullets.
@@ -402,7 +402,7 @@ FINAL VALIDATION CHECKLIST — run through this before saving the file:
   [6] No em dashes, no semicolons in any paragraph
   [7] All 4 canonical certifications present on page 1
 ==========================================================================
-- Name line 1: SUNIL KUMAR K (all 3 words, ALL CAPS) â€” missing K = fail
+- Name line 1: SUNIL KUMAR K (all 3 words, ALL CAPS) — missing K = fail
 - 2 pages, both fully filled
 - No em dashes, no semicolons
 - No tables except Core Competencies
@@ -411,13 +411,13 @@ FINAL VALIDATION CHECKLIST — run through this before saving the file:
 - Colors: Navy 1A3557, Teal 0D6E8A, BG F0F7FB/E3F2F8/F5FAFD/EBF4FF
 - Margins: 576 DXA top/bottom, 792 DXA left/right
 - $20M only if JD explicitly asks for P&L/revenue ownership
-- Gap check internally â€” do not pause to ask. Proceed to build.
+- Gap check internally — do not pause to ask. Proceed to build.
 - No spurious commas: never write "X, with" or trailing commas before conjunctions/prepositions. Proofread ALL punctuation before saving.
 - Validate all rules. Must reach 10/10 before saving.
 ==========================================================================
 """
 
-# â”€â”€ Google Drive â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Google Drive ──────────────────────────────────────────────────────────────
 
 def _get_drive_service():
     from google.oauth2.credentials import Credentials
@@ -511,7 +511,7 @@ def upload_to_drive(file_path, filename, job=None):
 
     return f.get('webViewLink', ''), download_url
 
-# â”€â”€ Resume builder â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Resume builder ────────────────────────────────────────────────────────────
 
 def safe_filename(title, company):
     def slug(s):
@@ -726,7 +726,7 @@ def _trigger_build(job_id, extra=''):
     t = threading.Thread(target=_do_build, args=(job_id, DB_PATH, extra), daemon=True)
     t.start()
 
-# â”€â”€ Email â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Email ─────────────────────────────────────────────────────────────────────
 
 def _send_email(job, resume_path, to_addr, gmail_user, gmail_pass, drive_link=''):
     msg = MIMEMultipart()
@@ -749,7 +749,7 @@ def _send_email(job, resume_path, to_addr, gmail_user, gmail_pass, drive_link=''
         s.login(gmail_user, gmail_pass)
         s.send_message(msg)
 
-# â”€â”€ API routes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── API routes ────────────────────────────────────────────────────────────────
 
 @app.route('/api/jobs', methods=['GET'])
 def api_list():
@@ -851,7 +851,7 @@ def api_settings_get():
     return jsonify({
         'email_to':   get_setting('email_to', DEFAULT_TO),
         'gmail_user': get_setting('gmail_user', os.environ.get('GMAIL_USER', '')),
-        'gmail_pass': ('â€¢' * 8) if (get_setting('gmail_pass') or os.environ.get('GMAIL_PASS')) else '',
+        'gmail_pass': ('•' * 8) if (get_setting('gmail_pass') or os.environ.get('GMAIL_PASS')) else '',
     })
 
 @app.route('/api/settings', methods=['POST'])
@@ -860,7 +860,7 @@ def api_settings_save():
     for key in ('email_to', 'gmail_user'):
         if d.get(key):
             set_setting(key, d[key].strip())
-    if d.get('gmail_pass') and not d['gmail_pass'].startswith('â€¢'):
+    if d.get('gmail_pass') and not d['gmail_pass'].startswith('•'):
         set_setting('gmail_pass', d['gmail_pass'].strip())
     return jsonify({'ok': True})
 
@@ -1049,7 +1049,7 @@ def api_jobboard():
         except Exception:
             pass
 
-    # Source 2: board_jobs table â€” LinkedIn alert email imports
+    # Source 2: board_jobs table — LinkedIn alert email imports
     try:
         db = get_db()
         db.execute('''CREATE TABLE IF NOT EXISTS board_jobs (
@@ -1140,7 +1140,7 @@ def api_backup_now():
     except Exception as e:
         return jsonify({'ok': False, 'error': str(e)}), 500
 
-# â”€â”€ UI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── UI ────────────────────────────────────────────────────────────────────────
 
 @app.route('/')
 def ui():
@@ -1225,7 +1225,7 @@ textarea{height:120px;resize:vertical}
 
 <div class="pane" id="pane-board">
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-    <span style="font-size:12px;color:#999" id="board-meta">Loadingâ€¦</span>
+    <span style="font-size:12px;color:#999" id="board-meta">Loading…</span>
     <div style="display:flex;gap:6px">
       <button onclick="importLinkedInAlerts()" id="btn-import-li" style="padding:6px 12px;border:1px solid #0a66c2;border-radius:8px;background:#fff;color:#0a66c2;font-size:12px;font-weight:500;cursor:pointer">&#128231; LinkedIn Alerts</button>
       <button onclick="loadBoard()" style="padding:6px 12px;border:1px solid #ddd;border-radius:8px;background:#fff;font-size:12px;cursor:pointer">&#8635; Refresh</button>
@@ -1233,7 +1233,7 @@ textarea{height:120px;resize:vertical}
   </div>
   <div id="import-li-status" style="display:none;font-size:12px;color:#555;margin-bottom:10px;padding:8px 12px;background:#f0f7ff;border-radius:8px;border:1px solid #cce0ff"></div>
   <div id="board-filter" style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap"></div>
-  <div id="board-list"><div class="empty">Loading jobsâ€¦</div></div>
+  <div id="board-list"><div class="empty">Loading jobs…</div></div>
 </div>
 
 <div class="pane" id="pane-queue">
@@ -1247,7 +1247,7 @@ textarea{height:120px;resize:vertical}
 
 <div class="pane" id="pane-settings">
   <div class="card">
-    <p style="font-size:12px;color:#666;margin-bottom:14px">Resumes are saved to your Google Drive automatically. Gmail is optional â€” enables email delivery too.</p>
+    <p style="font-size:12px;color:#666;margin-bottom:14px">Resumes are saved to your Google Drive automatically. Gmail is optional — enables email delivery too.</p>
     <label>Gmail address (optional sender)</label>
     <input type="email" id="s-gmail-user" placeholder="you@gmail.com"/>
     <label>Gmail App Password</label>
@@ -1291,12 +1291,12 @@ function showTab(name) {
   if (name === 'board') loadBoard();
 }
 
-// â”€â”€ Job Board â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Job Board ──────────────────────────────────────────────────────────────
 let boardJobs = [];
 let boardFilter = '';
 let boardSearch = '';
 
-// â”€â”€ Board preferences stored in localStorage â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── Board preferences stored in localStorage ───────────────────
 const DISMISSED_KEY = 'board_dismissed_v1';
 const FIT_KEY       = 'board_fit_v1';
 const STOP_WORDS = new Set(['and','the','of','for','in','at','a','an','to','with','head','vice',
@@ -1335,11 +1335,11 @@ function dismissJob(idx) {
   saveDismissed(d);
   boardJobs.splice(idx, 1);
   renderBoard();
-  toast('Removed â€” won\'t show again');
+  toast('Removed — won\'t show again');
 }
 
 async function loadBoard() {
-  document.getElementById('board-list').innerHTML = '<div class="empty">Loadingâ€¦</div>';
+  document.getElementById('board-list').innerHTML = '<div class="empty">Loading…</div>';
   const d = await api('/api/jobboard');
   if (d.error && !d.jobs) { document.getElementById('board-list').innerHTML = `<div class="empty">${esc(d.error)}</div>`; return; }
   // Filter already-dismissed jobs
@@ -1349,7 +1349,7 @@ async function loadBoard() {
     return !dismissed.has(key);
   });
   const srcLabel = (d.sources||[]).join(' + ') || `${boardJobs.length} jobs`;
-  document.getElementById('board-meta').textContent = `${srcLabel}${d.generated_at ? ' Â· ' + d.generated_at : ''}`;
+  document.getElementById('board-meta').textContent = `${srcLabel}${d.generated_at ? ' · ' + d.generated_at : ''}`;
   renderBoardFilter();
   renderBoard();
 }
@@ -1361,10 +1361,10 @@ function renderBoardFilter() {
   const hasLinkedIn = boardJobs.some(j => (j.source||'').toLowerCase().includes('linkedin'));
   const hasIndeed   = boardJobs.some(j => (j.source||'').toLowerCase().includes('indeed'));
   el.innerHTML =
-    `<input type="text" placeholder="Search title / companyâ€¦" oninput="setBoardSearch(this.value)"
+    `<input type="text" placeholder="Search title / company…" oninput="setBoardSearch(this.value)"
       style="width:100%;padding:8px 12px;border:1px solid #ddd;border-radius:8px;font-size:13px;margin-bottom:8px;font-family:inherit"/>` +
     chip('', 'All', boardFilter==='') +
-    chip('linkedin', 'ðŸ”µ LinkedIn', boardFilter==='linkedin') +
+    chip('linkedin', '🔵 LinkedIn', boardFilter==='linkedin') +
     (hasIndeed ? chip('indeed', 'Indeed', boardFilter==='indeed') : '');
 }
 
@@ -1390,7 +1390,7 @@ function renderBoard() {
   );
   if (!filtered.length) { el.innerHTML = '<div class="empty">No jobs found.</div>'; return; }
 
-  // Score and sort â€” highest fit first, then latest date, then original order
+  // Score and sort — highest fit first, then latest date, then original order
   const signals = getFitSignals();
   const scored = filtered.map((j, i) => ({ j, i, fs: fitScore(j, signals) }));
   const dateKey = j => (j.date_posted && j.date_posted !== 'nan' && j.date_posted !== '') ? j.date_posted : '0000-00-00';
@@ -1407,7 +1407,7 @@ function renderBoard() {
   <div class="job-head">
     <div style="flex:1;min-width:0">
       <div class="job-title">${esc(j.title)}${newBadge}${scoreHtml}${fitBadge}</div>
-      <div class="job-co">${esc(j.company)}${j.location ? ' Â· ' + esc(j.location) : ''}</div>
+      <div class="job-co">${esc(j.company)}${j.location ? ' · ' + esc(j.location) : ''}</div>
     </div>
     <span class="badge" style="background:#f0f4ff;color:#1a3557;flex-shrink:0">${esc(j.source||'')}</span>
   </div>
@@ -1419,14 +1419,14 @@ function renderBoard() {
     <button onclick="dismissJob(${idx})" title="Not for me" style="padding:8px 10px;background:#fff;color:#999;border:1px solid #eee;border-radius:7px;font-size:14px;cursor:pointer">&#10005;</button>
   </div>
 </div>`;
-  }).join('') + (scored.length > 150 ? `<div class="empty" style="padding:12px">Showing 150 of ${scored.length} â€” use search to narrow down</div>` : '');
+  }).join('') + (scored.length > 150 ? `<div class="empty" style="padding:12px">Showing 150 of ${scored.length} — use search to narrow down</div>` : '');
 }
 
 async function addBoardJobToQueue(idx) {
   const j = boardJobs[idx];
   if (!j) return;
   const btn = document.getElementById('badd-' + idx);
-  if (btn) { btn.disabled = true; btn.textContent = 'Addingâ€¦'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Adding…'; }
   const d = await api('/api/jobs', 'POST', {
     title:   j.title,
     company: j.company,
@@ -1434,9 +1434,9 @@ async function addBoardJobToQueue(idx) {
     jd:      j.description || '',
   });
   if (d.id) {
-    if (btn) { btn.textContent = 'âœ“ Added'; btn.style.background = '#16a34a'; }
+    if (btn) { btn.textContent = '✓ Added'; btn.style.background = '#16a34a'; }
     toast(`"${j.title}" added to queue`);
-    // Learn from this job â€” save fit signals
+    // Learn from this job — save fit signals
     const words = extractWords(j.title);
     if (words.length) {
       const signals = getFitSignals();
@@ -1453,7 +1453,7 @@ async function importLinkedInAlerts() {
   const btn = document.getElementById('btn-import-li');
   const status = document.getElementById('import-li-status');
   btn.disabled = true;
-  btn.textContent = 'Importingâ€¦';
+  btn.textContent = 'Importing…';
   status.style.display = 'none';
   try {
     const r = await api('/api/import-linkedin-emails', 'POST', { days: 7 });
@@ -1470,7 +1470,7 @@ async function importLinkedInAlerts() {
     status.style.display = 'block';
   }
   btn.disabled = false;
-  btn.textContent = 'âœ‰ LinkedIn Alerts';
+  btn.textContent = '✉ LinkedIn Alerts';
 }
 
 function toast(msg, ms=2500) {
@@ -1519,7 +1519,7 @@ async function addAndBuild() {
   // immediately trigger build
   await api(`/api/jobs/${d.id}/build`, 'POST');
   showTab('queue');
-  toast('Added and building â€” check back in 2-3 mins');
+  toast('Added and building — check back in 2-3 mins');
 }
 
 async function addOnly() {
@@ -1558,7 +1558,7 @@ function renderJobs() {
       </div>` : '';
     const recreateHtml = canRecreate ? `
       <div id="recreate-box-${j.id}" style="display:none;margin-top:10px">
-        <textarea id="recreate-note-${j.id}" placeholder="Reason for recreating, e.g: better match the strategy focus, sharpen the CS angle, fix page 2 gapsâ€¦"
+        <textarea id="recreate-note-${j.id}" placeholder="Reason for recreating, e.g: better match the strategy focus, sharpen the CS angle, fix page 2 gaps…"
           style="width:100%;padding:9px;border:1px solid #ddd;border-radius:8px;font-size:13px;height:70px;resize:none;font-family:inherit"></textarea>
         <button onclick="submitRecreate(${j.id})" style="width:100%;margin-top:6px;padding:9px;background:#1a3557;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer">
           &#9654; Recreate with these instructions
@@ -1590,7 +1590,7 @@ function esc(s) {
 
 async function buildOne(id) {
   const d = await api(`/api/jobs/${id}/build`, 'POST');
-  if (d.ok) { toast('Build started â€” 2-3 mins'); setTimeout(loadJobs, 1500); }
+  if (d.ok) { toast('Build started — 2-3 mins'); setTimeout(loadJobs, 1500); }
   else toast('Error: ' + (d.error||''), 4000);
 }
 
@@ -1606,7 +1606,7 @@ async function submitRecreate(id) {
   const d = await api(`/api/jobs/${id}/reply`, 'POST', {reply: instructions});
   if (d.ok) {
     document.getElementById('recreate-box-' + id).style.display = 'none';
-    toast('Recreating resumeâ€¦');
+    toast('Recreating resume…');
     setTimeout(loadJobs, 1500);
   } else {
     toast('Error: ' + (d.error || 'unknown'), 4000);
@@ -1701,7 +1701,7 @@ updateBadge();
 </html>
 """
 
-# â”€â”€ Start â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# ── Start ─────────────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
     init_db()
