@@ -1087,12 +1087,54 @@ def api_jobboard():
 
 @app.route('/health')
 def health():
+    token = _gh_token()
     return jsonify({
-        'ok':       True,
-        'template': os.path.exists(TEMPLATE),
-        'api_key':  bool(os.environ.get('ANTHROPIC_API_KEY')),
-        'drive':    bool(os.environ.get('GOOGLE_CREDENTIALS_JSON')),
+        'ok':          True,
+        'template':    os.path.exists(TEMPLATE),
+        'api_key':     bool(os.environ.get('ANTHROPIC_API_KEY')),
+        'drive':       bool(os.environ.get('GOOGLE_CREDENTIALS_JSON')),
+        'gh_token':    bool(token),
+        'gh_token_hint': (token[:6] + '…') if token else 'NOT SET',
     })
+
+@app.route('/api/backup-now', methods=['POST'])
+def api_backup_now():
+    """Trigger a synchronous GitHub backup and return result."""
+    token = _gh_token()
+    if not token:
+        return jsonify({'ok': False, 'error': 'RESUME_HUB_TOKEN not set — add it as a Render env var'}), 400
+    import urllib.request as _ur
+    try:
+        conn = sqlite3.connect(DB_PATH)
+        conn.row_factory = sqlite3.Row
+        jobs = [dict(r) for r in conn.execute('SELECT * FROM jobs ORDER BY id').fetchall()]
+        conn.close()
+
+        payload = json.dumps({'jobs': jobs, 'backed_up_at': datetime.now().isoformat()}, ensure_ascii=False)
+        content_b64 = base64.b64encode(payload.encode('utf-8')).decode()
+
+        sha = ''
+        try:
+            req = _ur.Request(GITHUB_API_URL,
+                headers={'Authorization': f'token {token}', 'Accept': 'application/vnd.github.v3+json'})
+            with _ur.urlopen(req, timeout=8) as resp:
+                sha = json.loads(resp.read()).get('sha', '')
+        except Exception:
+            pass
+
+        body = {'message': f'manual backup: {len(jobs)} jobs', 'content': content_b64, 'branch': 'main'}
+        if sha:
+            body['sha'] = sha
+
+        data = json.dumps(body).encode()
+        req = _ur.Request(GITHUB_API_URL, data=data, method='PUT',
+            headers={'Authorization': f'token {token}',
+                     'Content-Type': 'application/json',
+                     'Accept': 'application/vnd.github.v3+json'})
+        _ur.urlopen(req, timeout=15)
+        return jsonify({'ok': True, 'jobs_backed_up': len(jobs)})
+    except Exception as e:
+        return jsonify({'ok': False, 'error': str(e)}), 500
 
 # â”€â”€ UI â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
