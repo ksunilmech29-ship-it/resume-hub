@@ -183,6 +183,19 @@ init_db()  # runs at import time
 restore_jobs_from_github()  # restore from GitHub if DB was wiped
 threading.Thread(target=_backup_heartbeat, daemon=True).start()  # backup every 5 min
 
+def _restart_stuck_jobs():
+    """On startup, any job stuck as 'building' was interrupted by a redeploy — restart it."""
+    import time as _t
+    _t.sleep(5)  # let the server fully start
+    conn = sqlite3.connect(DB_PATH)
+    stuck = conn.execute("SELECT id FROM jobs WHERE status='building'").fetchall()
+    conn.close()
+    for row in stuck:
+        print(f'[startup] Restarting stuck build for job {row[0]}')
+        _trigger_build(row[0])
+
+threading.Thread(target=_restart_stuck_jobs, daemon=True).start()
+
 def get_setting(key, default=''):
     row = get_db().execute('SELECT value FROM settings WHERE key=?', (key,)).fetchone()
     return row['value'] if row else default
