@@ -114,6 +114,17 @@ def backup_jobs_to_github():
 def _backup_async():
     threading.Thread(target=backup_jobs_to_github, daemon=True).start()
 
+def _backup_heartbeat():
+    """Backup every 5 minutes unconditionally — belt-and-suspenders."""
+    import time as _t
+    _t.sleep(30)
+    while True:
+        try:
+            backup_jobs_to_github()
+        except Exception:
+            pass
+        _t.sleep(300)
+
 app = Flask(__name__)
 
 # ── Database ──────────────────────────────────────────────────────────────────
@@ -169,7 +180,8 @@ def init_db():
     conn.close()
 
 init_db()  # runs at import time
-restore_jobs_from_github()  # restore from GitHub if DB was wiped — works with both gunicorn and direct python
+restore_jobs_from_github()  # restore from GitHub if DB was wiped
+threading.Thread(target=_backup_heartbeat, daemon=True).start()  # backup every 5 min
 
 def get_setting(key, default=''):
     row = get_db().execute('SELECT value FROM settings WHERE key=?', (key,)).fetchone()
