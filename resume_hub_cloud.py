@@ -648,8 +648,10 @@ def _do_build(job_id, db_path, extra=''):
         drive_error = ''
         try:
             drive_link, download_url = upload_to_drive(output_path, fname, job=job)
+            log(f'Drive upload OK: {drive_link}')
         except Exception as e:
             drive_error = str(e)
+            log(f'Drive upload FAILED: {drive_error}')
 
         # Convert to PDF and upload to same Drive subfolder
         try:
@@ -1090,15 +1092,23 @@ def api_jobboard():
 @app.route('/health')
 def health():
     token = _gh_token()
-    env_keys = [k for k in os.environ if 'TOKEN' in k.upper() or 'HUB' in k.upper()]
+    env_keys = [k for k in os.environ if 'TOKEN' in k.upper() or 'HUB' in k.upper() or 'GOOGLE' in k.upper()]
+    drive_ok = bool(
+        os.environ.get('GOOGLE_REFRESH_TOKEN') and
+        os.environ.get('GOOGLE_CLIENT_ID') and
+        os.environ.get('GOOGLE_CLIENT_SECRET')
+    )
+    missing = [v for v in ['GOOGLE_REFRESH_TOKEN','GOOGLE_CLIENT_ID','GOOGLE_CLIENT_SECRET']
+               if not os.environ.get(v)]
     return jsonify({
-        'ok':          True,
-        'template':    os.path.exists(TEMPLATE),
-        'api_key':     bool(os.environ.get('ANTHROPIC_API_KEY')),
-        'drive':       bool(os.environ.get('GOOGLE_CREDENTIALS_JSON')),
-        'gh_token':    bool(token),
+        'ok':            True,
+        'template':      os.path.exists(TEMPLATE),
+        'api_key':       bool(os.environ.get('ANTHROPIC_API_KEY')),
+        'drive':         drive_ok,
+        'drive_missing': missing,
+        'gh_token':      bool(token),
         'gh_token_hint': (token[:6] + '…') if token else 'NOT SET',
-        'env_token_keys': env_keys,
+        'env_google_keys': [k for k in os.environ if 'GOOGLE' in k.upper()],
     })
 
 @app.route('/api/backup-now', methods=['POST'])
