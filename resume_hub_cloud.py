@@ -1088,6 +1088,7 @@ def api_jobboard():
 @app.route('/health')
 def health():
     token = _gh_token()
+    env_keys = [k for k in os.environ if 'TOKEN' in k.upper() or 'HUB' in k.upper()]
     return jsonify({
         'ok':          True,
         'template':    os.path.exists(TEMPLATE),
@@ -1095,6 +1096,7 @@ def health():
         'drive':       bool(os.environ.get('GOOGLE_CREDENTIALS_JSON')),
         'gh_token':    bool(token),
         'gh_token_hint': (token[:6] + '…') if token else 'NOT SET',
+        'env_token_keys': env_keys,
     })
 
 @app.route('/api/backup-now', methods=['POST'])
