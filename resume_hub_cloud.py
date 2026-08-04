@@ -782,7 +782,10 @@ def api_add():
                      (title, company, d.get('url', ''), d.get('jd', '')))
     db.commit()
     _backup_async()
-    row = db.execute('SELECT * FROM jobs WHERE id=?', (cur.lastrowid,)).fetchone()
+    job_id = cur.lastrowid
+    # Auto-trigger build immediately — no separate "Build" tap needed
+    _trigger_build(job_id)
+    row = db.execute('SELECT * FROM jobs WHERE id=?', (job_id,)).fetchone()
     return jsonify(dict(row)), 201
 
 @app.route('/api/jobs/<int:jid>', methods=['PATCH'])
@@ -1240,8 +1243,7 @@ textarea{height:120px;resize:vertical}
     <input type="url" id="add-url" placeholder="https://linkedin.com/jobs/view/..."/>
     <label>Job Description (paste full JD for best results)</label>
     <textarea id="add-jd" placeholder="Paste the full job description here..."></textarea>
-    <button class="btn btn-primary" onclick="addAndBuild()">&#9654; Add &amp; Build Resume</button>
-    <button class="btn" style="background:#f5f5f5;color:#444;margin-top:8px" onclick="addOnly()">&#43; Add to Queue Only</button>
+    <button class="btn btn-primary" onclick="addAndBuild()">&#9654; Submit &amp; Build Resume</button>
   </div>
 </div>
 
@@ -1535,13 +1537,15 @@ function clearForm() {
 async function addAndBuild() {
   const { title, company, url, jd } = getFormData();
   if (!title || !company) { toast('Title and company are required'); return; }
+  if (!jd.trim()) {
+    toast('Tip: paste the job description for a tailored resume', 3000);
+  }
   const d = await api('/api/jobs', 'POST', { title, company, url, jd });
   if (!d.id) { toast('Error: ' + (d.error||''), 4000); return; }
   clearForm();
-  // immediately trigger build
-  await api(`/api/jobs/${d.id}/build`, 'POST');
+  // Build starts automatically on the server — no separate trigger needed
   showTab('queue');
-  toast('Added and building — check back in 2-3 mins');
+  toast('Submitted! Building resume — check Queue in 2-3 mins');
 }
 
 async function addOnly() {
