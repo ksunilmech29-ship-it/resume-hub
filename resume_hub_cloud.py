@@ -27,7 +27,9 @@ GITHUB_API_URL  = f'https://api.github.com/repos/{GITHUB_REPO}/contents/{BACKUP_
 _gh_lock        = threading.Lock()
 
 def _gh_token():
-    token = os.environ.get('RESUME_HUB_TOKEN', '')
+    token = (os.environ.get('RESUME_HUB_TOKEN')
+             or os.environ.get('Resume_Hub_Token')
+             or os.environ.get('resume_hub_token', ''))
     if not token:
         try:
             conn = sqlite3.connect(DB_PATH)
