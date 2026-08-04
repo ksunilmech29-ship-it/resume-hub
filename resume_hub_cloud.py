@@ -794,8 +794,9 @@ def api_add():
     cur = db.execute('INSERT INTO jobs(title,company,url,jd_text) VALUES(?,?,?,?)',
                      (title, company, d.get('url', ''), d.get('jd', '')))
     db.commit()
-    _backup_async()
     job_id = cur.lastrowid
+    # Synchronous backup BEFORE triggering build — job is safe in GitHub before we proceed
+    backup_jobs_to_github()
     # Auto-trigger build immediately — no separate "Build" tap needed
     _trigger_build(job_id)
     row = db.execute('SELECT * FROM jobs WHERE id=?', (job_id,)).fetchone()
