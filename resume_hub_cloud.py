@@ -795,12 +795,38 @@ def api_add():
                      (title, company, d.get('url', ''), d.get('jd', '')))
     db.commit()
     job_id = cur.lastrowid
-    # Synchronous backup BEFORE triggering build — job is safe in GitHub before we proceed
-    backup_jobs_to_github()
-    # Auto-trigger build immediately — no separate "Build" tap needed
-    _trigger_build(job_id)
+    backup_jobs_to_github()  # persist before desktop picks it up
     row = db.execute('SELECT * FROM jobs WHERE id=?', (job_id,)).fetchone()
     return jsonify(dict(row)), 201
+
+
+@app.route('/api/pending-for-desktop')
+def api_pending_for_desktop():
+    """Desktop polls this every 60s to pick up jobs submitted from mobile."""
+    jobs = get_db().execute(
+        "SELECT * FROM jobs WHERE status='pending' ORDER BY id"
+    ).fetchall()
+    return jsonify([dict(j) for j in jobs])
+
+
+@app.route('/api/update-from-desktop', methods=['POST'])
+def api_update_from_desktop():
+    """Desktop calls this after building to update status, drive link, and log."""
+    d = request.json or {}
+    job_id     = d.get('id')
+    status     = d.get('status', 'done')
+    drive_link = d.get('drive_link', '')
+    build_log  = d.get('build_log', '')
+    if not job_id:
+        return jsonify({'error': 'id required'}), 400
+    db = get_db()
+    db.execute(
+        "UPDATE jobs SET status=?, drive_link=?, built_at=?, build_log=? WHERE id=?",
+        (status, drive_link, datetime.now().strftime('%Y-%m-%d %H:%M'), build_log, job_id)
+    )
+    db.commit()
+    _backup_async()
+    return jsonify({'ok': True})
 
 @app.route('/api/jobs/<int:jid>', methods=['PATCH'])
 def api_edit(jid):
@@ -1582,7 +1608,7 @@ function renderJobs() {
   if (!jobs.length) { el.innerHTML = '<div class="empty">No jobs yet. Add one on the Add Job tab.</div>'; return; }
   el.innerHTML = jobs.map(j => {
     const bClass = {pending:'b-pending',building:'b-building',done:'b-done',error:'b-error'}[j.status] || 'b-pending';
-    const bLabel = {pending:'Pending',building:'Building...',done:'Done',error:'Error'}[j.status] || j.status;
+    const bLabel = {pending:'⏳ Queued',building:'🖥️ Building...',done:'✅ Done',error:'❌ Error'}[j.status] || j.status;
     const canBuild    = j.status === 'pending' || j.status === 'error';
     const canRecreate = j.status === 'done';
     const showLog     = j.build_log && (j.status === 'building' || j.status === 'error' || (j.status === 'done' && !j.drive_link));
